@@ -10,7 +10,7 @@ export interface Repo {
   name: string;
   displayName: string;
   totalAmount: number;
-  latestItems: (PullRequest | Issue)[];
+  latestItems: Item[];
 }
 
 export interface PullRequest {
@@ -26,6 +26,8 @@ export interface Issue {
   amount: number;
   pullRequests?: PullRequest[];
 }
+
+export type Item = PullRequest | Issue;
 
 const organisations: Organisation[] = [
   {

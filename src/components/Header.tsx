@@ -1,7 +1,5 @@
-import { Button } from '@/components/Button';
 import { Container } from '@/components/Container';
 import { Logo } from '@/components/Logo';
-import { NavLink } from '@/components/NavLink';
 import { Popover, Transition } from '@headlessui/react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -83,9 +81,8 @@ function MobileNavigation() {
             as="div"
             className="absolute inset-x-0 top-full mt-4 flex origin-top flex-col rounded-2xl bg-white p-4 text-lg tracking-tight text-slate-900 shadow-xl ring-1 ring-slate-900/5"
           >
-            <MobileNavLink href="#features">Placeholder</MobileNavLink>
             <hr className="m-2 border-slate-300/40" />
-            <MobileNavLink href="/login">Sign in</MobileNavLink>
+            <WalletMultiButtonDynamic />
           </Popover.Panel>
         </Transition.Child>
       </Transition.Root>
@@ -117,7 +114,7 @@ export function Header() {
             </Link>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
-            <WalletMultiButtonDynamic className="dark:!bg-blue-800 dark:hover:!bg-blue-900" />
+            <WalletMultiButtonDynamic className="!hidden dark:!bg-blue-800 dark:hover:!bg-blue-900 md:!flex" />
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>
