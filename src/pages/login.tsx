@@ -52,7 +52,9 @@ export default function Login() {
           />
           <div>
             <Button
-              type="submit"
+              buttonProps={{
+                type: 'submit',
+              }}
               variant="solid"
               color="blue"
               className="w-full"
