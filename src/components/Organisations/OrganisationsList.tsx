@@ -1,43 +1,5 @@
 import Link from 'next/link';
-
-export const organisations = [
-  {
-    name: 'devfi',
-    displayName: 'DevFi',
-    totalAmount: 3.1002,
-    address: 'FQ6tQRVERHA29n88WQeut1G3QfJ66bSMM733vFoqUXpr',
-    repos: [
-      {
-        name: 'frontend',
-        displayName: 'DevFi Frontend',
-        totalAmount: 2.1,
-      },
-      {
-        name: 'contracts',
-        displayName: 'DevFi Smart Contracts',
-        totalAmount: 1.0002,
-      },
-    ],
-  },
-  {
-    name: 'devfi-2',
-    displayName: 'DevFi #2',
-    totalAmount: 3.1002,
-    address: 'AGYboJMBit5PxpwBVTJ68L6itbsNXd3Yy3fzc6SkbeN1',
-    repos: [
-      {
-        name: 'frontend',
-        displayName: 'DevFi Frontend',
-        totalAmount: 2.1,
-      },
-      {
-        name: 'contracts',
-        displayName: 'DevFi Smart Contracts',
-        totalAmount: 1.0002,
-      },
-    ],
-  },
-];
+import { organisations } from '../../data/organisations';
 
 interface OrganisationsListProps {}
 

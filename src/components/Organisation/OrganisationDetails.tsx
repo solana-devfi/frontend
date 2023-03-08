@@ -1,4 +1,5 @@
-import { organisations } from '../Organisations/OrganisationsList';
+import organisations from '@/data/organisations';
+import RepoCard from './RepoCard';
 
 interface OrganisationDetailsProps {
   organisationName: string;
@@ -33,16 +34,11 @@ const OrganisationDetails = ({
       </div>
       <div className="grid grid-cols-2 gap-4">
         {organisation.repos.map((repo) => (
-          <div
+          <RepoCard
             key={repo.name}
-            className="rounded-lg border-2 p-4 px-6 dark:border-slate-400"
-          >
-            <h3 className="text-lg font-bold text-slate-200">
-              {repo.displayName}
-            </h3>
-            <p className="font-semibold dark:text-slate-400">{repo.name}</p>
-            
-          </div>
+            {...repo}
+            organisationName={organisationName}
+          />
         ))}
       </div>
     </div>
