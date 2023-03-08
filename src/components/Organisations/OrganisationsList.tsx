@@ -1,5 +1,5 @@
+import organisations from '@/data/organisations';
 import Link from 'next/link';
-import { organisations } from '../../data/organisations';
 
 interface OrganisationsListProps {}
 
@@ -9,10 +9,10 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
       {organisations.map((organisation) => (
         <li
           key={organisation.name}
-          className="flex items-center justify-between rounded-md border-2 px-4 py-2 text-slate-200 dark:border-slate-200"
+          className="flex items-center justify-between rounded-md border-2 px-6 py-4 text-slate-200 dark:border-slate-200"
         >
           <div>
-            <h3 className="mb-1 text-xl font-bold underline transition-colors dark:text-blue-200 dark:hover:text-blue-400">
+            <h3 className="mb-1 text-2xl font-bold hover:underline transition-colors dark:text-slate-200 dark:hover:text-slate-300">
               <Link href={'/organisations/' + organisation.name}>
                 {organisation.displayName}
               </Link>
