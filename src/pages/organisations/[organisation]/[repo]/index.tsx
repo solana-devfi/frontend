@@ -17,7 +17,7 @@ const RepoPage = () => {
   return (
     <>
       <Head>
-        <title>DevFi - Accounting made simple for small businesses</title>
+        <title>DevFi - Git to Earn for Developers</title>
         <meta
           name="description"
           content="Most bookkeeping software is accurate, but hard to use. We make the opposite trade-off, and hope you don’t get audited."

@@ -1,12 +1,18 @@
-import { Fragment, useEffect } from 'react';
-import Link from 'next/link';
-import { Popover, Transition } from '@headlessui/react';
 import { Button } from '@/components/Button';
 import { Container } from '@/components/Container';
 import { Logo } from '@/components/Logo';
 import { NavLink } from '@/components/NavLink';
+import { Popover, Transition } from '@headlessui/react';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { Fragment, useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { LightModeButton } from './LightModeButton';
+
+const WalletMultiButtonDynamic = dynamic(
+  async () =>
+    (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+  { ssr: false }
+);
 
 function MobileNavLink({ href, children }) {
   return (
@@ -111,14 +117,7 @@ export function Header() {
             </Link>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
-            <div className="hidden md:block">
-              <NavLink href="/login">Sign in</NavLink>
-            </div>
-            <Button href="/register" color="blue">
-              <span>
-                Get started <span className="hidden lg:inline">today</span>
-              </span>
-            </Button>
+            <WalletMultiButtonDynamic className="dark:!bg-blue-800 dark:hover:!bg-blue-900" />
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>
