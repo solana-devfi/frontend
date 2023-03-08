@@ -9,5 +9,5 @@
 
 main {
   /* subtract footer (56.8px) and header (120px) */
-  height: calc(100% - 56.8px - 120px);
+  min-height: calc(100% - 56.8px - 120px);
 }
