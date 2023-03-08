@@ -1,10 +1,10 @@
-import { Button } from '@/components/Button'
-import { Container } from '@/components/Container'
+import { Button } from '@/components/Button';
+import { Container } from '@/components/Container';
 
 export function Hero() {
   return (
     <Container className="py-28 text-center">
-      <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl">
+      <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 dark:text-slate-200 sm:text-7xl">
         Accounting{' '}
         <span className="relative whitespace-nowrap text-blue-600">
           <svg
@@ -19,7 +19,7 @@ export function Hero() {
         </span>{' '}
         for small businesses.
       </h1>
-      <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
+      <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700 dark:text-slate-200">
         Most bookkeeping software is accurate, but hard to use. We make the
         opposite trade-off, and hope you don’t get audited.
       </p>
@@ -39,5 +39,5 @@ export function Hero() {
         </Button>
       </div>
     </Container>
-  )
+  );
 }

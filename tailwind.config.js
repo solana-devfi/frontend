@@ -1,7 +1,8 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
     fontSize: {
@@ -33,4 +34,4 @@ module.exports = {
     },
   },
   plugins: [require('@tailwindcss/forms')],
-}
+};

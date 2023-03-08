@@ -14,7 +14,7 @@ export default function Home() {
         />
       </Head>
       <Header />
-      <main>
+      <main className="dark:bg-slate-900">
         <Hero />
       </main>
       <Footer />

@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import Link from 'next/link';
 import { Popover, Transition } from '@headlessui/react';
 import { Button } from '@/components/Button';
@@ -6,6 +6,7 @@ import { Container } from '@/components/Container';
 import { Logo } from '@/components/Logo';
 import { NavLink } from '@/components/NavLink';
 import { twMerge } from 'tailwind-merge';
+import { LightModeButton } from './LightModeButton';
 
 function MobileNavLink({ href, children }) {
   return (
@@ -87,8 +88,20 @@ function MobileNavigation() {
 }
 
 export function Header() {
+  useEffect(() => {
+    if (
+      localStorage.getItem('color-theme') === 'dark' ||
+      (!('color-theme' in localStorage) &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
   return (
-    <header className="py-10">
+    <header className="py-10 dark:bg-slate-900">
       <Container>
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
