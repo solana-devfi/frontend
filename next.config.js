@@ -4,6 +4,9 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
   },
-}
+  images: {
+    domains: ['avatars.githubusercontent.com'],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

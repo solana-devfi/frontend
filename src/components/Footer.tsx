@@ -8,7 +8,7 @@ export function Footer() {
         <div className="flex flex-col items-center border-t border-slate-400/10 py-4 sm:flex-row-reverse sm:justify-between">
           <div className="flex gap-x-6">
             <Link
-              href="https://twitter.com"
+              href="https://twitter.com/DevFiSolana"
               className="group"
               aria-label="DevFi on Twitter"
             >
@@ -20,7 +20,7 @@ export function Footer() {
               </svg>
             </Link>
             <Link
-              href="https://github.com"
+              href="https://github.com/solana-devfi"
               className="group"
               aria-label="DevFi on GitHub"
             >
