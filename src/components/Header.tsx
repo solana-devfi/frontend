@@ -105,12 +105,12 @@ export function Header() {
   }, []);
 
   return (
-    <header className="py-10 dark:bg-slate-900">
+    <header className="py-8 dark:bg-slate-900">
       <Container>
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
             <Link href="/" aria-label="Home">
-              <Logo className="h-10 w-auto" />
+              <Logo />
             </Link>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
