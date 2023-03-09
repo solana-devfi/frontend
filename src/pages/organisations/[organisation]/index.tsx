@@ -2,12 +2,18 @@ import { Container } from '@/components/Layout/Container';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
 import OrganisationDetails from '@/components/Organisation/OrganisationDetails';
+import useUserOrganisations from '@/hooks/useUserOrganisations';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 const OrganisationPage = () => {
   const router = useRouter();
-  const { organisation } = router.query;
+  const { organisation: orgName } = router.query;
+
+  const { organisations } = useUserOrganisations();
+  const organisation = organisations.find(
+    (organisation) => organisation.login === orgName
+  );
 
   return (
     <>
@@ -22,7 +28,7 @@ const OrganisationPage = () => {
       <main className="dark:bg-slate-900">
         <Container>
           {organisation ? (
-            <OrganisationDetails organisationName={organisation.toString()} />
+            <OrganisationDetails {...organisation} />
           ) : (
             <h1 className="text-4xl font-extrabold dark:text-slate-200">
               No organisation found!

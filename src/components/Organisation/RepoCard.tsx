@@ -1,16 +1,14 @@
 import { Repo } from '@/data/organisations';
+import { GithubRepo } from '@/hooks/useOrganisationRepos';
 import Link from 'next/link';
 
-interface RepoCardProps extends Repo {
-  organisationName: string;
-}
+interface RepoCardProps extends GithubRepo {}
 
 const RepoCard = ({
   name,
-  displayName,
-  totalAmount,
-  latestItems,
-  organisationName,
+  full_name,
+  description,
+  html_url,
 }: RepoCardProps) => {
   return (
     <div
@@ -20,23 +18,31 @@ const RepoCard = ({
       <div className="flex items-start justify-between">
         <div>
           <h3 className="text-lg font-bold transition-colors hover:underline dark:text-slate-200 dark:hover:text-slate-300">
-            <Link href={`/organisations/${organisationName}/${name}`}>
-              {displayName}
-            </Link>
+            <Link href={`/organisations/${full_name}`}>{name}</Link>
           </h3>
-          <p className="dark:text-slate-400">{name}</p>
+          <p className="dark:text-slate-400">
+            <a href={html_url} className="hover:underline">{html_url}</a>
+          </p>
         </div>
         <div>
           <span className="text-2xl font-bold dark:text-slate-200">
-            {totalAmount.toFixed(4)} SOL
+            1.1 SOL
           </span>
         </div>
       </div>
       <div>
         <h3 className="text font-bold transition-colors dark:text-slate-200">
+          Description
+        </h3>
+        <p className="dark:text-slate-300">
+          {description || 'No description found'}
+        </p>
+      </div>
+      <div>
+        <h3 className="text font-bold transition-colors dark:text-slate-200">
           Latest Issues/PRs
         </h3>
-        <ul className="mt-2">
+        {/* <ul className="mt-2">
           {latestItems.map((item) => (
             <li
               key={item.id}
@@ -53,7 +59,7 @@ const RepoCard = ({
               </div>
             </li>
           ))}
-        </ul>
+        </ul> */}
       </div>
     </div>
   );

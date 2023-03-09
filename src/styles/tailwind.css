@@ -8,6 +8,6 @@
 
 
 main {
-  /* subtract footer (56.8px) and header (112px) */
-  min-height: calc(100% - 56.8px - 112px);
+  /* subtract footer and header */
+  min-height: calc(100% - 56.8px - 108px);
 }

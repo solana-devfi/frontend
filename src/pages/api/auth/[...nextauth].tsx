@@ -7,8 +7,12 @@ export const authOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_OAUTH_ID,
       clientSecret: process.env.GITHUB_OAUTH_SECRET,
+      authorization: {
+        params: {
+          scope: 'read:org',
+        },
+      },
     }),
-    // ...add more providers here
   ],
   callbacks: {
     async jwt({ token, account }) {

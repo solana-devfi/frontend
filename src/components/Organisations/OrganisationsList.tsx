@@ -1,13 +1,15 @@
-import organisations from '@/data/organisations';
+import useUserOrganisations from '@/hooks/useUserOrganisations';
 import { signIn, useSession } from 'next-auth/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '../Layout/Button';
 
 interface OrganisationsListProps {}
 
 const OrganisationsList = ({}: OrganisationsListProps) => {
-  const { data, status } = useSession();
-  console.log({ data });
+  const { status } = useSession();
+  const { organisations } = useUserOrganisations();
+
   if (status !== 'authenticated') {
     return (
       <div>
@@ -24,27 +26,36 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
     );
   }
   return (
-    <ul className="mt-8 space-y-4">
+    <ul className="mt-8 space-y-4 pb-4">
       {organisations.map((organisation) => (
         <li
-          key={organisation.name}
+          key={organisation.login}
           className="flex items-center justify-between rounded-md border-2 px-6 py-4 text-slate-200 dark:border-slate-200"
         >
           <div>
-            <h3 className="mb-1 text-2xl font-bold transition-colors hover:underline dark:text-slate-200 dark:hover:text-slate-300">
-              <Link href={'/organisations/' + organisation.name}>
-                {organisation.displayName}
-              </Link>
-            </h3>
-            <p className="dark:text-slate-400">{organisation.name}</p>
+            <div className="mb-1 flex items-center space-x-2">
+              <Image
+                src={organisation.avatar_url}
+                alt={organisation.login + ' avatar'}
+                width={36}
+                height={36}
+                className="rounded-full"
+              />
+              <h3 className="text-2xl font-bold transition-colors hover:underline dark:text-slate-200 dark:hover:text-slate-300">
+                <Link href={'/organisations/' + organisation.login}>
+                  {organisation.login}
+                </Link>
+              </h3>
+            </div>
+            <p className="dark:text-slate-400 mb-1">{organisation.description || "No description found"}</p>
+            {/* TODO: fetch from smart contract */}
             <span className="font-mono dark:text-slate-400">
-              {organisation.address}
+              FQ6tQRVERHA29n88WQeut1G3QfJ66bSMM733vFoqUXpr
             </span>
           </div>
           <div>
-            <span className="text-2xl font-bold">
-              {organisation.totalAmount} SOL
-            </span>
+            {/* TODO: fetch from smart contract */}
+            <span className="text-2xl font-bold">3 SOL</span>
           </div>
         </li>
       ))}

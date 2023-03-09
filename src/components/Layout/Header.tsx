@@ -99,7 +99,7 @@ function GithubButton() {
       return (
         <Button
           color="slate"
-          className="rounded-lg py-3 px-6"
+          className="rounded-lg py-2 px-4 text-base"
           buttonProps={{
             onClick: () => signIn(),
           }}
@@ -112,7 +112,7 @@ function GithubButton() {
   return (
     <Button
       color="slate"
-      className="rounded-lg py-3 px-6"
+      className="rounded-lg py-2 px-4"
       buttonProps={{
         onClick: () => signOut(),
       }}
@@ -147,7 +147,7 @@ export function Header() {
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
             <GithubButton />
-            <WalletMultiButtonDynamic className="!hidden !rounded-lg !py-2 !transition-colors dark:!bg-blue-800 dark:hover:!bg-blue-900 md:!flex" />
+            <WalletMultiButtonDynamic className="!hidden !rounded-lg !py-2 !h-auto !text-base !transition-colors dark:!bg-blue-700 dark:hover:!bg-blue-900 md:!flex" />
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>
