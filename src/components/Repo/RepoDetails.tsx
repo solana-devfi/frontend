@@ -1,7 +1,7 @@
 import { Repo } from '@/data/organisations';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
-import { Button } from '../Button';
+import { Button } from '../Layout/Button';
 import Avatars from './Avatars';
 
 interface RepoDetailsProps extends Repo {

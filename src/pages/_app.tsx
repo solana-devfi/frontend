@@ -1,15 +1,26 @@
-import 'focus-visible';
 import '@/styles/tailwind.css';
 import '@solana/wallet-adapter-react-ui/styles.css';
+import 'focus-visible';
 
-import { ContextProvider } from '@/contexts/ContextProvider';
-import Notifications from '@/components/Notifications';
+import Notifications from '@/components/Layout/Notifications';
+import { ContextProvider } from '@/contexts/WalletContextProvider';
+import { SessionProvider } from 'next-auth/react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
-export default function App({ Component, pageProps }) {
+const queryClient = new QueryClient();
+
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}) {
   return (
-    <ContextProvider>
-      <Notifications />
-      <Component {...pageProps} />
-    </ContextProvider>
+    <SessionProvider session={session}>
+      <ContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <Notifications />
+          <Component {...pageProps} />
+        </QueryClientProvider>
+      </ContextProvider>
+    </SessionProvider>
   );
 }

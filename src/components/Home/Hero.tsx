@@ -1,5 +1,5 @@
-import { Button } from '@/components/Button';
-import { Container } from '@/components/Container';
+import { Button } from '@/components/Layout/Button';
+import { Container } from '@/components/Layout/Container';
 
 export function Hero() {
   return (
@@ -24,7 +24,7 @@ export function Hero() {
         opposite trade-off, and hope you don’t get audited. */}
       </p>
       <div className="mt-10 flex justify-center gap-x-6">
-        <Button href="/organisations" className="text-lg py-2 rounded-lg">
+        <Button href="/organisations" className="rounded-lg py-2 text-lg">
           Get Started
         </Button>
       </div>

@@ -1,6 +1,6 @@
-import { Container } from '@/components/Container';
-import { Footer } from '@/components/Footer';
-import { Header } from '@/components/Header';
+import { Container } from '@/components/Layout/Container';
+import { Footer } from '@/components/Layout/Footer';
+import { Header } from '@/components/Layout/Header';
 import OrganisationsList from '@/components/Organisations/OrganisationsList';
 import Head from 'next/head';
 

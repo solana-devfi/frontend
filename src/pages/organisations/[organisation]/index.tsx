@@ -1,6 +1,6 @@
-import { Container } from '@/components/Container';
-import { Footer } from '@/components/Footer';
-import { Header } from '@/components/Header';
+import { Container } from '@/components/Layout/Container';
+import { Footer } from '@/components/Layout/Footer';
+import { Header } from '@/components/Layout/Header';
 import OrganisationDetails from '@/components/Organisation/OrganisationDetails';
 import Head from 'next/head';
 import { useRouter } from 'next/router';

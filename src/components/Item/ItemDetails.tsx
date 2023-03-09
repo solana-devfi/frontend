@@ -3,7 +3,7 @@ import Avatars from '../Repo/Avatars';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
-import { Button } from '../Button';
+import { Button } from '../Layout/Button';
 
 type ItemDetailsProps = Item & {
   organisationName: string;

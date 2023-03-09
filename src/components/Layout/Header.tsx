@@ -1,10 +1,12 @@
-import { Container } from '@/components/Container';
-import { Logo } from '@/components/Logo';
 import { Popover, Transition } from '@headlessui/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Fragment, useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { Button } from './Button';
+import { Container } from './Container';
+import { Logo } from './Logo';
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -90,6 +92,36 @@ function MobileNavigation() {
   );
 }
 
+function GithubButton() {
+  const { status } = useSession();
+  if (status !== 'authenticated') {
+    {
+      return (
+        <Button
+          color="slate"
+          className="rounded-lg py-3 px-6"
+          buttonProps={{
+            onClick: () => signIn(),
+          }}
+        >
+          GitHub Login
+        </Button>
+      );
+    }
+  }
+  return (
+    <Button
+      color="slate"
+      className="rounded-lg py-3 px-6"
+      buttonProps={{
+        onClick: () => signOut(),
+      }}
+    >
+      Github Logout
+    </Button>
+  );
+}
+
 export function Header() {
   useEffect(() => {
     document.documentElement.classList.add('dark');
@@ -114,7 +146,8 @@ export function Header() {
             </Link>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
-            <WalletMultiButtonDynamic className="!hidden dark:!bg-blue-800 dark:hover:!bg-blue-900 md:!flex" />
+            <GithubButton />
+            <WalletMultiButtonDynamic className="!hidden !rounded-lg !py-2 !transition-colors dark:!bg-blue-800 dark:hover:!bg-blue-900 md:!flex" />
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>

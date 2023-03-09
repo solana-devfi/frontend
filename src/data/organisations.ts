@@ -31,7 +31,7 @@ export type Item = PullRequest | Issue;
 
 const organisations: Organisation[] = [
   {
-    name: 'solana-devfi',
+    name: 'solana-xdevfi',
     displayName: 'DevFi',
     totalAmount: 3.1002,
     address: 'FQ6tQRVERHA29n88WQeut1G3QfJ66bSMM733vFoqUXpr',

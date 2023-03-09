@@ -1,6 +1,6 @@
-import { Footer } from '@/components/Footer';
-import { Header } from '@/components/Header';
-import { Hero } from '@/components/Hero';
+import { Footer } from '@/components/Layout/Footer';
+import { Header } from '@/components/Layout/Header';
+import { Hero } from '@/components/Home/Hero';
 import Head from 'next/head';
 
 export default function Home() {
