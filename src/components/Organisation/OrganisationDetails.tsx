@@ -1,4 +1,3 @@
-import organisations from '@/data/organisations';
 import useOrganisationRepos from '@/hooks/useOrganisationRepos';
 import { GithubOrganisation } from '@/hooks/useUserOrganisations';
 import Image from 'next/image';
@@ -12,7 +11,7 @@ const OrganisationDetails = ({
   login,
   url,
 }: OrganisationDetailsProps) => {
-  const { repos } = useOrganisationRepos(login);
+  const { data } = useOrganisationRepos(login);
   return (
     <div>
       <div className="mb-6">
@@ -31,11 +30,17 @@ const OrganisationDetails = ({
         <a
           href={`https://github.com/${login}`}
           target="_blank"
-          className="text-xl font-semibold hover:underline dark:text-slate-400 dark:hover:text-slate-500"
+          className="text-xl font-semibold hover:underline dark:text-slate-500 dark:hover:text-slate-600"
           rel="noreferrer"
         >
           {`https://github.com/${login}`}
         </a>
+        <div className="my-2 -space-y-1">
+          <h2 className="text-lg font-bold dark:text-slate-100">Description</h2>
+          <p className="text-xl dark:text-slate-500">
+            {description || 'No description found'}
+          </p>
+        </div>
         <div className="my-2 -space-y-1">
           <h2 className="text-lg font-bold dark:text-slate-100">Wallet</h2>
           <p className="font-mono text-xl dark:text-slate-500">
@@ -48,7 +53,7 @@ const OrganisationDetails = ({
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        {repos.map((repo) => (
+        {data?.data.map((repo) => (
           <RepoCard key={repo.name} {...repo} />
         ))}
       </div>

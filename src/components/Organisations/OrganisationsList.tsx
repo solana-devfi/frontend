@@ -9,7 +9,7 @@ interface OrganisationsListProps {}
 
 const OrganisationsList = ({}: OrganisationsListProps) => {
   const { status } = useSession();
-  const { organisations } = useUserOrganisations();
+  const { data } = useUserOrganisations();
 
   if (status !== 'authenticated') {
     return (
@@ -29,7 +29,7 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
   return (
     <>
       <ul className="mt-8 space-y-4 pb-4">
-        {organisations.map((organisation) => (
+        {data?.data.map((organisation) => (
           <li
             key={organisation.login}
             className="flex items-center justify-between rounded-md border-2 px-6 py-4 text-slate-200 dark:border-slate-200"

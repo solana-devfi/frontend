@@ -1,18 +1,12 @@
 import { Container } from '@/components/Layout/Container';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
-import RepoDetails from '@/components/Repo/RepoDetails';
-import organisations from '@/data/organisations';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 const RepoPage = () => {
   const router = useRouter();
   const { organisation: organisationName, repo: repoName } = router.query;
-
-  const repo = organisations
-    .find((organisation) => organisation.name === organisationName)
-    ?.repos.find((repo) => repo.name === repoName);
 
   return (
     <>
@@ -26,16 +20,16 @@ const RepoPage = () => {
       <Header />
       <main className="dark:bg-slate-900">
         <Container>
-          {repo ? (
+          {/* {pullRequests.length ? (
             <RepoDetails
-              {...repo}
+              {...pullRequests}
               organisationName={organisationName.toString()}
             />
           ) : (
             <h1 className="text-4xl font-extrabold dark:text-slate-200">
               No repo found!
             </h1>
-          )}
+          )} */}
         </Container>
       </main>
       <Footer />

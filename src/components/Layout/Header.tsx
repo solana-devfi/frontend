@@ -112,7 +112,7 @@ function GithubButton() {
   return (
     <Button
       color="slate"
-      className="rounded-lg py-2 px-4"
+      className="rounded-lg py-2 px-4 text-base"
       buttonProps={{
         onClick: () => signOut(),
       }}
@@ -124,6 +124,7 @@ function GithubButton() {
 
 export function Header() {
   useEffect(() => {
+    // TODO: add light mode switch
     document.documentElement.classList.add('dark');
     // if (
     //   localStorage.getItem('color-theme') === 'dark' ||

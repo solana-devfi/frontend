@@ -1,6 +1,6 @@
-import { Repo } from '@/data/organisations';
 import { GithubRepo } from '@/hooks/useOrganisationRepos';
 import Link from 'next/link';
+import LatestItems from './LatestItems';
 
 interface RepoCardProps extends GithubRepo {}
 
@@ -9,6 +9,7 @@ const RepoCard = ({
   full_name,
   description,
   html_url,
+  owner: { login },
 }: RepoCardProps) => {
   return (
     <div
@@ -21,7 +22,9 @@ const RepoCard = ({
             <Link href={`/organisations/${full_name}`}>{name}</Link>
           </h3>
           <p className="dark:text-slate-400">
-            <a href={html_url} className="hover:underline">{html_url}</a>
+            <a href={html_url} className="hover:underline">
+              {html_url}
+            </a>
           </p>
         </div>
         <div>
@@ -42,24 +45,7 @@ const RepoCard = ({
         <h3 className="text font-bold transition-colors dark:text-slate-200">
           Latest Issues/PRs
         </h3>
-        {/* <ul className="mt-2">
-          {latestItems.map((item) => (
-            <li
-              key={item.id}
-              className="flex justify-between font-light dark:text-slate-300"
-            >
-              <div>
-                <span className="font-normal">#{item.id}</span>
-                <span> {item.name}</span>
-              </div>
-              <div>
-                <span className="font-normal">
-                  {item.amount.toFixed(4)} SOL
-                </span>
-              </div>
-            </li>
-          ))}
-        </ul> */}
+        <LatestItems repoName={name} organisationName={login} />
       </div>
     </div>
   );

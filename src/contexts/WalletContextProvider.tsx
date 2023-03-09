@@ -75,12 +75,10 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 export const ContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   return (
-    <>
-      <NetworkConfigurationProvider>
-        <AutoConnectProvider>
-          <WalletContextProvider>{children}</WalletContextProvider>
-        </AutoConnectProvider>
-      </NetworkConfigurationProvider>
-    </>
+    <NetworkConfigurationProvider>
+      <AutoConnectProvider>
+        <WalletContextProvider>{children}</WalletContextProvider>
+      </AutoConnectProvider>
+    </NetworkConfigurationProvider>
   );
 };

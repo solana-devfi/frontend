@@ -10,8 +10,8 @@ const OrganisationPage = () => {
   const router = useRouter();
   const { organisation: orgName } = router.query;
 
-  const { organisations } = useUserOrganisations();
-  const organisation = organisations.find(
+  const { data } = useUserOrganisations();
+  const organisation = data?.data.find(
     (organisation) => organisation.login === orgName
   );
 
