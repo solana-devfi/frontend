@@ -1,6 +1,7 @@
 import { Container } from '@/components/Layout/Container';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
+import AddOrganisationLink from '@/components/Organisations/AddOrganisationLink';
 import OrganisationsList from '@/components/Organisations/OrganisationsList';
 import Head from 'next/head';
 
@@ -21,6 +22,7 @@ const OrganisationsPage = () => {
             Your Organisations
           </h1>
           <OrganisationsList />
+          <AddOrganisationLink />
         </Container>
       </main>
       <Footer />
