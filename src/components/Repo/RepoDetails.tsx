@@ -108,7 +108,7 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
       </div>
       <h3 className="pb-6 text-2xl font-bold dark:text-slate-200">Issues</h3>
       <div className="relative overflow-x-auto rounded-lg dark:bg-slate-800">
-        <table className="w-full table-auto border-collapse text-left">
+        <table className="w-full table-auto border-collapse text-left shadow">
           <thead>
             <tr className="text-sm dark:text-slate-400">
               <th className="py-3 pl-4">NO.</th>

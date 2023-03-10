@@ -28,13 +28,11 @@ const ReactUIWalletModalProviderDynamic = dynamic(
   { ssr: false }
 );
 
-const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
+const WalletContextProvider = ({ children }: { children?: ReactNode }) => {
   const { autoConnect } = useAutoConnect();
   const { networkConfiguration } = useNetworkConfiguration();
   const network = networkConfiguration as WalletAdapterNetwork;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-
-  console.log(network);
 
   const wallets = useMemo(
     () => [
@@ -73,7 +71,7 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
-export const ContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const ContextProvider = ({ children }: { children?: ReactNode }) => {
   return (
     <NetworkConfigurationProvider>
       <AutoConnectProvider>
