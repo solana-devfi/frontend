@@ -1,70 +1,105 @@
 import { Octokit } from '@octokit/rest';
-import crypto from 'crypto';
+import { createAppAuth } from '@octokit/auth-app';
+import * as anchor from "@project-serum/anchor";
+import { clusterApiUrl, Connection } from "@solana/web3.js";
+import { GitToEarn } from "./idl";
+import idl from "./idl.json";
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN as string;
-const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET as string;
+const authConfig = {
+  appId: process.env.GITHUB_APP_ID,
+  privateKey: process.env.GITHUB_APP_PRIVATE_KEY,
+  clientId: process.env.GITHUB_APP_CLIENT_ID,
+  clientSecret: process.env.GITHUB_APP_CLIENT_SECRET,
+};
 
 const octokit = new Octokit({
-  auth: GITHUB_TOKEN,
+  authStrategy: createAppAuth,
+  auth: authConfig,
 });
+
+const signingOracle = anchor.web3.Keypair.fromSecretKey(JSON.parse(process.env.SIGNING_ORACLE_PRIVATE_KEY));
+const provider = createProvider();
+const program = new anchor.Program(idl as any as GitToEarn, process.env.PROGRAM_ID, provider);
+const [state, _] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("state")], program.programId);
 
 // Handle incoming webhook events
 export default async function payload(req: any, res: any): Promise<void> {
   console.log(req.body)
   try {
     const event = req.headers['x-github-event'];
-    const signature = req.headers['x-hub-signature'];
     const payload = req.body;
 
     // Verify the webhook signature
-    const secret = WEBHOOK_SECRET;
-    const hash = crypto
-      .createHmac('sha1', secret)
-      .update(JSON.stringify(payload))
-      .digest('hex');
-    const signatureExpected = `sha1=${hash}`;
-    if (signature !== signatureExpected) {
-      console.error('Invalid webhook signature.');
-      return res.status(400).send('Invalid signature');
-    }
+    // const signature = req.headers['x-hub-signature'];
+    // const secret = WEBHOOK_SECRET;
+    // const hash = crypto
+    //   .createHmac('sha1', secret)
+    //   .update(JSON.stringify(payload))
+    //   .digest('hex');
+    // const signatureExpected = `sha1=${hash}`;
+    // if (signature !== signatureExpected) {
+    //   console.error('Invalid webhook signature.');
+    //   return res.status(400).send('Invalid signature');
+    // }
 
     // Handle the webhook event
     await handleWebhookEvent(event, payload);
 
-    console.log('payload handled');
-    console.log(event, payload);
-
-    // Send a 200 OK response to GitHub
     res.status(200).send('OK');
   } catch (error) {
     console.error('Failed to handle webhook event:', error);
   }
 }
 
-async function handleWebhookEvent(event, payload) {
+async function handleWebhookEvent(event: any, payload: any) {
   try {
     if (
       event === 'pull_request' &&
-      (payload.action === 'opened' || payload.action === 'synchronize')
+      (payload.action === 'closed')
     ) {
-      const owner = payload.repository.owner.login;
-      const repo = payload.repository.name;
-      const pullRequestNumber = payload.pull_request.number;
-      const status = await checkPullRequestStatus(
-        owner,
-        repo,
-        pullRequestNumber
-      );
+      const merged = payload.pull_request.merged;
+      if (merged) {
+        const owner = payload.repository.owner.login;
+        const repo = payload.repository.name;
 
-      if (status) {
-        console.log(
-          `Pull request ${pullRequestNumber} in ${owner}/${repo} has been approved.`
-        );
-        // Add your code here to take action when the pull request is approved.
-      } else {
-        console.log(
-          `Pull request ${pullRequestNumber} in ${owner}/${repo} has not been approved yet.`
-        );
+
+        let regex = /Fixes #(\d+)/;
+        let match = payload.pull_request.body.match(regex);
+        if (!match) {
+          throw "Linked Issue not found";
+        }
+
+        const issueNumber = match[1];
+        const issueDescription = (await octokit.rest.issues.get({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28'
+          }
+        })).data.body;
+
+        regex = /Bounty (\d+(?:\.\d+)?)SOL/;
+        match = issueDescription.match(regex);
+        if (!match) {
+          throw "Linked Bounty not found";
+        }
+
+        const bounty = match[1];
+
+        const fromSeed = owner;
+        const toSeed = payload.pull_request.user.login;
+
+        await program.methods.transfer(owner, toSeed, new anchor.BN(bounty * anchor.web3.LAMPORTS_PER_SOL)).accounts(
+          {
+            senderWallet: getWalletFromSeed(fromSeed),
+            receiverWallet: getWalletFromSeed(toSeed),
+            state,
+            signingOracle: signingOracle.publicKey,
+            signer: program.provider.publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+          }
+        ).signers([signingOracle]).rpc();
       }
     }
   } catch (error) {
@@ -72,21 +107,21 @@ async function handleWebhookEvent(event, payload) {
   }
 }
 
-// Check if a pull request has been approved
-async function checkPullRequestStatus(
-  owner: string,
-  repo: string,
-  pullRequestNumber: number
-): Promise<boolean> {
-  try {
-    const { data: reviews } = await octokit.pulls.listReviews({
-      owner,
-      repo,
-      pull_number: pullRequestNumber,
-    });
-    return reviews.some((review) => review.state === 'APPROVED');
-  } catch (error) {
-    console.error('Failed to check pull request status:', error);
-    return false;
-  }
+function getWalletFromSeed(seed: string): anchor.web3.PublicKey {
+  const [account, _] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("wallet"), Buffer.from(seed)], program.programId);
+  return account;
+}
+
+function createProvider(): anchor.Provider {
+  const endpoint = clusterApiUrl("devnet");
+  const connection = new Connection(endpoint);
+
+  const wallet = new anchor.Wallet(signingOracle);
+
+  const provider = new anchor.AnchorProvider(connection, wallet, {
+    preflightCommitment: "recent",
+    commitment: "recent",
+  });
+
+  return provider;
 }
