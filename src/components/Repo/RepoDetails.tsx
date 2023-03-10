@@ -1,9 +1,9 @@
 import useOrganisationRepos from '@/hooks/useOrganisationRepos';
-import useRepoIssues, { GithubIssue } from '@/hooks/useRepoIssues';
-import useRepoPRs, { GithubPullRequest } from '@/hooks/useRepoPRs';
+import useRepoIssues from '@/hooks/useRepoIssues';
+import useRepoPRs from '@/hooks/useRepoPRs';
+import createWebhook from '@/pages/api/githubWebhook';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import Avatars from './Avatars';
 
 interface RepoDetailsProps {
@@ -34,14 +34,27 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
 
   return (
     <div className="pb-12">
-      <div className="pb-8">
-        <h1 className="mb-2 text-5xl font-extrabold dark:text-slate-200">
-          {repo.name}
-        </h1>
-        <h2 className="mb-2 text-xl font-semibold dark:text-slate-400">
-          {repo.full_name}
-        </h2>
-        <span className="text-3xl font-bold dark:text-slate-200">1.1 SOL</span>
+      <div className="flex justify-between">
+        <div className="pb-8">
+          <h1 className="mb-2 text-5xl font-extrabold dark:text-slate-200">
+            {repo.name}
+          </h1>
+          <h2 className="mb-2 text-xl font-semibold dark:text-slate-400">
+            {repo.full_name}
+          </h2>
+          <span className="text-3xl font-bold dark:text-slate-200">1.1 SOL</span>
+        </div>
+        <div className="pt-8">
+          <button
+            className="group mb-6 inline-flex items-center justify-center rounded-lg bg-blue-600 py-2 px-4 text-lg font-semibold text-white hover:bg-blue-500 hover:text-slate-100 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 active:bg-blue-800 active:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:active:bg-blue-600"
+            color="blue"
+            onClick={() => {
+              createWebhook(organisationName, repoName)
+            }}
+          >
+            Create Webhook
+          </button>
+        </div>
       </div>
       <div className="flex items-center justify-between">
         <h3 className="text-2xl font-bold dark:text-slate-200">
@@ -72,36 +85,36 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
           <tbody className="dark:text-slate-200">
             {pullRequestsData?.data.length
               ? pullRequestsData.data.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
-                  >
-                    <td className="py-4 pl-4">{item.number}</td>
-                    <td className="py-4 pl-4">
-                      <Link
-                        href={`/organisations/${repo.full_name}/${item.number}`}
-                        className="hover:underline"
-                      >
-                        {item.title}
-                      </Link>
-                    </td>
-                    <td className="py-4 pl-4">
-                      <Avatars assignees={item.assignees} />
-                    </td>
-                    <td className="py-4 pl-4">
-                      <span>
-                        {new Date(item.updated_at).toLocaleDateString()}{' '}
-                        {new Date(item.updated_at).toLocaleTimeString()}
-                      </span>
-                    </td>
-                    <td className="py-4 pl-4">
-                      <span className="font-bold dark:text-green-700">
-                        1.1 SOL
-                      </span>
-                    </td>
-                    <td className="py-4 pl-4">{item.state}</td>
-                  </tr>
-                ))
+                <tr
+                  key={item.id}
+                  className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
+                >
+                  <td className="py-4 pl-4">{item.number}</td>
+                  <td className="py-4 pl-4">
+                    <Link
+                      href={`/organisations/${repo.full_name}/${item.number}`}
+                      className="hover:underline"
+                    >
+                      {item.title}
+                    </Link>
+                  </td>
+                  <td className="py-4 pl-4">
+                    <Avatars assignees={item.assignees} />
+                  </td>
+                  <td className="py-4 pl-4">
+                    <span>
+                      {new Date(item.updated_at).toLocaleDateString()}{' '}
+                      {new Date(item.updated_at).toLocaleTimeString()}
+                    </span>
+                  </td>
+                  <td className="py-4 pl-4">
+                    <span className="font-bold dark:text-green-700">
+                      1.1 SOL
+                    </span>
+                  </td>
+                  <td className="py-4 pl-4">{item.state}</td>
+                </tr>
+              ))
               : undefined}
           </tbody>
         </table>
@@ -122,36 +135,36 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
           <tbody className="dark:text-slate-200">
             {issuesData?.data.length
               ? issuesData.data.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
-                  >
-                    <td className="py-4 pl-4">{item.number}</td>
-                    <td className="py-4 pl-4">
-                      <Link
-                        href={`/organisations/${repo.full_name}/${item.number}`}
-                        className="hover:underline"
-                      >
-                        {item.title}
-                      </Link>
-                    </td>
-                    <td className="py-4 pl-4">
-                      <Avatars assignees={item.assignees} />
-                    </td>
-                    <td className="py-4 pl-4">
-                      <span>
-                        {new Date(item.updated_at).toLocaleDateString()}{' '}
-                        {new Date(item.updated_at).toLocaleTimeString()}
-                      </span>
-                    </td>
-                    <td className="py-4 pl-4">
-                      <span className="font-bold dark:text-green-700">
-                        1.1 SOL
-                      </span>
-                    </td>
-                    <td className="py-4 pl-4">{item.state}</td>
-                  </tr>
-                ))
+                <tr
+                  key={item.id}
+                  className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
+                >
+                  <td className="py-4 pl-4">{item.number}</td>
+                  <td className="py-4 pl-4">
+                    <Link
+                      href={`/organisations/${repo.full_name}/${item.number}`}
+                      className="hover:underline"
+                    >
+                      {item.title}
+                    </Link>
+                  </td>
+                  <td className="py-4 pl-4">
+                    <Avatars assignees={item.assignees} />
+                  </td>
+                  <td className="py-4 pl-4">
+                    <span>
+                      {new Date(item.updated_at).toLocaleDateString()}{' '}
+                      {new Date(item.updated_at).toLocaleTimeString()}
+                    </span>
+                  </td>
+                  <td className="py-4 pl-4">
+                    <span className="font-bold dark:text-green-700">
+                      1.1 SOL
+                    </span>
+                  </td>
+                  <td className="py-4 pl-4">{item.state}</td>
+                </tr>
+              ))
               : undefined}
           </tbody>
         </table>

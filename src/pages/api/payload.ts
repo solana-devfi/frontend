@@ -10,6 +10,7 @@ const octokit = new Octokit({
 
 // Handle incoming webhook events
 export default async function payload(req: any, res: any): Promise<void> {
+  console.log(req.body)
   try {
     const event = req.headers['x-github-event'];
     const signature = req.headers['x-hub-signature'];
