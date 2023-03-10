@@ -70,7 +70,7 @@ async function handleWebhookEvent(event: any, payload: any) {
         }
 
         const issueNumber = match[1];
-        const issueDescription = (await octokit.request('GET /repos/{owner}/{repo}/issues/{issue_number}', {
+        const issueDescription = (await octokit.rest.issues.get({
           owner,
           repo,
           issue_number: issueNumber,
