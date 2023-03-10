@@ -1,6 +1,11 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
+const DEV_FI_INSTALLATION_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://github.com/apps/devfi-git-to-earn/installations/new'
+    : 'https://github.com/apps/devfi-git-to-earn-dev/installations/new';
+
 interface AddOrganisationLinkProps {}
 
 const AddOrganisationLink = ({}: AddOrganisationLinkProps) => {
@@ -9,7 +14,7 @@ const AddOrganisationLink = ({}: AddOrganisationLinkProps) => {
 
   function handleClick() {
     const newPopup = window.open(
-      'https://github.com/apps/devfi-git-to-earn/installations/new',
+      DEV_FI_INSTALLATION_URL,
       '_blank',
       'scrollbars=yes,resizable=yes'
     );
@@ -27,7 +32,7 @@ const AddOrganisationLink = ({}: AddOrganisationLinkProps) => {
       }, 1000);
       return () => {};
     }
-  }, [popup]);
+  }, [popup, router]);
 
   return (
     <p className="dark:text-slate-300">
