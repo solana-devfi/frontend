@@ -1,6 +1,8 @@
+// import { Button } from '@/components/Layout/Button';
 import { Container } from '@/components/Layout/Container';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
+import createWebhook from '@/pages/api/githubWebhook';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
@@ -30,6 +32,18 @@ const RepoPage = () => {
               No repo found!
             </h1>
           )} */}
+          <button
+            onClick={() => {
+              console.log('test');
+              createWebhook(
+                organisationName.toString(),
+                repoName.toString(),
+                'https://7e04-116-86-155-43.ap.ngrok.io/api/payload'
+              );
+            }}
+          >
+            test button
+          </button>
         </Container>
       </main>
       <Footer />
