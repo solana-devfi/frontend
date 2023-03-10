@@ -1,10 +1,8 @@
-import { Octokit } from '@octokit/rest';
+import { Octokit } from '@octokit/rest'
+import { createAppAuth } from '@octokit/auth-app'
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN as string;
-
-const octokit = new Octokit({
-  auth: GITHUB_TOKEN,
-});
+const GITHUB_APP_ID = parseInt(process.env.GITHUB_APP_ID);
+const GITHUB_APP_PRIVATE_KEY = process.env.GITHUB_APP_PRIVATE_KEY as string;
 
 // pages/api/example.js
 
@@ -12,10 +10,25 @@ const octokit = new Octokit({
 export default async function createWebhook(
   owner: string,
   repo: string,
+  installationId: number,
   webhookUrl: string
 ) {
+  const auth = createAppAuth({
+    appId: GITHUB_APP_ID,
+    privateKey: GITHUB_APP_PRIVATE_KEY,
+  })
+
+  const installationAuth = await auth({
+    type: 'installation',
+    installationId: 35082995,
+  })
+
+  const octokit = new Octokit({
+    auth: installationAuth.token // directly pass the token
+  })
+
   try {
-    await octokit.request('POST /repos/{owner}/{repo}/hooks', {
+    await octokit.rest.repos.createWebhook({
       owner: owner,
       repo: repo,
       name: 'web',
@@ -32,9 +45,7 @@ export default async function createWebhook(
         'Access-Control-Allow-Origin': 'https://localhost:3000',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       },
-    });
-    console.log('run');
-
+    })
     console.log(`Webhook created successfully for ${owner}/${repo}.`);
   } catch (error) {
     console.error(`Failed to create webhook for ${owner}/${repo}:`, error);

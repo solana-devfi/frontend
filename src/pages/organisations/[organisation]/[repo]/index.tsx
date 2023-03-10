@@ -57,6 +57,7 @@ const RepoPage = () => {
             createWebhook(
               organisationName.toString(),
               repoName.toString(),
+              0,
               'https://7e04-116-86-155-43.ap.ngrok.io/api/payload'
             );
           }}
