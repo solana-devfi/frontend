@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 
 export type GithubIssue = Awaited<
   ReturnType<RestEndpointMethods['issues']['listForRepo']>
->['data'][number];
+>['data'][number] & { bounty: string };
 
 const fetchRepoIssues = (
   accessToken: string,
@@ -22,18 +22,20 @@ const fetchRepoIssues = (
     })
     .then((issuesData) => {
       const regex = /Bounty (\d+(?:\.\d+)?)SOL/;
-      for (let i = 0; i < issuesData?.data.length; i++) {
-        const issueDescription = issuesData?.data[i].body;
-        if (!issueDescription) {
-          continue;
-        }
-        const match = issueDescription.match(regex);
-        if (match) {
-          // @ts-ignore
-          issuesData.data[i].bounty = match[1].toString() + ' SOL';
-        }
-      }
-      return issuesData;
+      return {
+        ...issuesData,
+        data: issuesData.data.map((item) => {
+          const issueDescription = item.body;
+          if (!issueDescription) {
+            return item;
+          }
+          const match = issueDescription.match(regex);
+          if (match) {
+            return { ...item, bounty: match[1].toString() };
+          }
+          return item;
+        }),
+      };
     });
 };
 

@@ -4,8 +4,8 @@ import useRepoPRs from '@/hooks/useRepoPRs';
 import createWebhook from '@/pages/api/githubWebhook';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
-import Avatars from './Avatars';
 import { useEffect, useState } from 'react';
+import Avatars from './Avatars';
 
 interface RepoDetailsProps {
   repoName: string;
@@ -13,10 +13,6 @@ interface RepoDetailsProps {
 }
 
 const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
-  useEffect(() => {
-    createWebhook(organisationName, repoName);
-  }, [repoName, organisationName]);
-
   const { data: reposData } = useOrganisationRepos(organisationName);
   const { data: pullRequestsData } = useRepoPRs(
     organisationName.toString(),
@@ -26,6 +22,15 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
     organisationName.toString(),
     repoName.toString()
   );
+
+  const [hasCreatedWebhook, setHasCreatedWebhook] = useState(false);
+
+  useEffect(() => {
+    if (organisationName && repoName && !hasCreatedWebhook) {
+      setHasCreatedWebhook(true);
+      createWebhook(organisationName, repoName);
+    }
+  }, [organisationName, repoName]);
 
   const repo = reposData?.data.find((repo) => repo.name === repoName);
   if (!repo) {

@@ -3,6 +3,7 @@ import useOrganisationRepos from '@/hooks/useOrganisationRepos';
 import { GithubOrganisation } from '@/hooks/useUserOrganisations';
 import {
   createProviderWithConnection,
+  getProxyFromSeed,
   getWalletFromSeed,
 } from '@/utils/wallet';
 import * as anchor from '@project-serum/anchor';
@@ -73,6 +74,7 @@ const OrganisationDetails = ({
   const { data } = useOrganisationRepos(login);
   return (
     <div>
+      <DepositFundsPopup />
       <div className="mb-6">
         <div className="flex items-center justify-between space-x-4">
           <div className="flex flex-row space-x-2">
@@ -95,7 +97,6 @@ const OrganisationDetails = ({
           >
             Deposit Funds
           </Button>
-          <DepositFundsPopup />
         </div>
         <a
           href={`https://github.com/${login}`}

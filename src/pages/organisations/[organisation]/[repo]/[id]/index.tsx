@@ -1,4 +1,4 @@
-import ItemDetails from '@/components/Item/ItemDetails';
+import ItemDetails from '@/components/Item/IssueDetails';
 import { Container } from '@/components/Layout/Container';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
@@ -28,9 +28,6 @@ function ItemPage() {
             issueNumber={id.toString()}
             organisationName={organisation.toString()}
             repoName={repo.toString()}
-            // issueNumber={'3'}
-            // organisationName={'solana-devfi'}
-            // repoName={'frontend'}
           />
         </Container>
       </main>

@@ -12,6 +12,17 @@ export function getWalletFromSeed(
   return account;
 }
 
+export function getProxyFromSeed(
+  seed: string,
+  programId: anchor.web3.PublicKey
+): anchor.web3.PublicKey {
+  const [account, _] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from('proxy'), Buffer.from(seed)],
+    programId
+  );
+  return account;
+}
+
 export function createProvider(wallet: anchor.Wallet): anchor.Provider {
   const endpoint = clusterApiUrl('devnet');
   const connection = new Connection(endpoint);
