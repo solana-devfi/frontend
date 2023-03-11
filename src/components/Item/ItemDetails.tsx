@@ -4,30 +4,44 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import { Button } from '../Layout/Button';
+import useRepoIssues from '@/hooks/useRepoIssues';
+import { useEffect, useState } from 'react';
 
 type ItemDetailsProps = Item & {
+  issueNumber: string;
   organisationName: string;
   repoName: string;
 };
 
 const ItemDetails = ({
-  amount,
-  id,
-  name,
+  issueNumber,
   organisationName,
   repoName,
 }: ItemDetailsProps) => {
-  return (
+  const { data: issuesData } = useRepoIssues(
+    organisationName.toString(),
+    repoName.toString()
+  );
+
+  const [issueData, setIssueData] = useState<any>(null);
+
+  useEffect(() => {
+    setIssueData(
+      issuesData?.data.find((issue) => issue.id.toString() === issueNumber)
+    );
+  }, [issuesData]);
+
+  return issueData ? (
     <div>
       <div className="pb-12">
         <h1 className="mb-2 text-5xl font-extrabold dark:text-slate-200">
-          #{id} {name}
+          #{issueNumber} {issueData.title}
         </h1>
         <h2 className="mb-2 text-xl font-semibold dark:text-slate-400">
           {organisationName}/{repoName}
         </h2>
         <span className="text-3xl font-bold dark:text-slate-200">
-          {amount} SOL
+          {issueData.bounty} SOL
         </span>
       </div>
       <div className="space-y-4 rounded-lg border-2 p-6 pt-4 dark:border-slate-700">
@@ -65,6 +79,8 @@ const ItemDetails = ({
         </Button>
       </div>
     </div>
+  ) : (
+    <div className="div3">test</div>
   );
 };
 
