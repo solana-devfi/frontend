@@ -9,7 +9,7 @@ export function GithubButton() {
       return (
         <Button
           color="slate"
-          className="w-auto rounded-lg py-2 px-4 text-base"
+          className="rounded-lg py-2 px-4 text-base"
           buttonProps={{
             onClick: () => signIn(),
           }}
@@ -17,9 +17,9 @@ export function GithubButton() {
           <Image
             src={'/logos/github.svg'}
             alt="Github Logo"
-            width={26}
-            height={26}
-            className="mr-2 w-auto"
+            width={24}
+            height={24}
+            className="mr-2 h-6 w-6"
           />
           Login
         </Button>
@@ -37,9 +37,9 @@ export function GithubButton() {
       <Image
         src={'/logos/github.svg'}
         alt="Github Logo"
-        width={26}
-        height={26}
-        className="mr-2"
+        width={24}
+        height={24}
+        className="mr-2 h-6 w-6"
       />
       Logout
     </Button>
