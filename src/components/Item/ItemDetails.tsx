@@ -1,13 +1,9 @@
-import { Item } from '@/data/organisations';
-import Avatars from '../Repo/Avatars';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ExternalLinkIcon } from '@heroicons/react/outline';
-import { Button } from '../Layout/Button';
 import useRepoIssues from '@/hooks/useRepoIssues';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { Button } from '../Layout/Button';
 
-type ItemDetailsProps = Item & {
+type ItemDetailsProps = {
   issueNumber: string;
   organisationName: string;
   repoName: string;
@@ -27,11 +23,15 @@ const ItemDetails = ({
 
   useEffect(() => {
     setIssueData(
-      issuesData?.data.find((issue) => issue.id.toString() === issueNumber)
+      issuesData?.data.find((issue) => issue.number.toString() === issueNumber)
     );
-  }, [issuesData]);
+  }, [issueNumber, issuesData]);
 
-  return issueData ? (
+  if (!issueData) {
+    return <div className="div">loading...</div>;
+  }
+
+  return (
     <div>
       <div className="pb-12">
         <h1 className="mb-2 text-5xl font-extrabold dark:text-slate-200">
@@ -41,7 +41,7 @@ const ItemDetails = ({
           {organisationName}/{repoName}
         </h2>
         <span className="text-3xl font-bold dark:text-slate-200">
-          {issueData.bounty} SOL
+          {issueData.bounty}
         </span>
       </div>
       <div className="space-y-4 rounded-lg border-2 p-6 pt-4 dark:border-slate-700">
@@ -74,13 +74,11 @@ const ItemDetails = ({
             <span>1.0 SOL</span>
           </div>
         </div>
-        <Button color="blue" className="rounded-lg">
+        {/* <Button color="blue" className="rounded-lg">
           Distribute Bounty
-        </Button>
+        </Button> */}
       </div>
     </div>
-  ) : (
-    <div className="div3">test</div>
   );
 };
 

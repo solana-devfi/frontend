@@ -1,19 +1,16 @@
+import ItemDetails from '@/components/Item/ItemDetails';
 import { Container } from '@/components/Layout/Container';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
-import ItemDetails from '@/components/Item/ItemDetails';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import useRepoIssues from '@/hooks/useRepoIssues';
-import { useEffect, useState } from 'react';
 
-const ItemPage = () => {
+function ItemPage() {
   const router = useRouter();
-  const {
-    organisation: organisationName,
-    repo: repoName,
-    id: issueNumber,
-  } = router.query;
+  if (!router.isReady) {
+    return <div>loading...</div>;
+  }
+  const { organisation, repo, id } = router.query;
 
   return (
     <>
@@ -28,15 +25,18 @@ const ItemPage = () => {
       <main className="dark:bg-slate-900">
         <Container>
           <ItemDetails
-            issueNumber={issueNumber.toString()}
-            organisationName={organisationName.toString()}
-            repoName={repoName.toString()}
+            issueNumber={id.toString()}
+            organisationName={organisation.toString()}
+            repoName={repo.toString()}
+            // issueNumber={'3'}
+            // organisationName={'solana-devfi'}
+            // repoName={'frontend'}
           />
         </Container>
       </main>
       <Footer />
     </>
   );
-};
+}
 
 export default ItemPage;
