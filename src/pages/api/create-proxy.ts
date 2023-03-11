@@ -44,14 +44,17 @@ export default async function handler(
     transaction.feePayer = userPublicKey;
 
     transaction.partialSign(signingOracle);
-    const signature = transaction.signatures.find(
-      (signature) =>
-        signature.publicKey.toBase58() == signingOracle.publicKey.toBase58()
-    );
-    return res.status(200).json({
-      message: 'success',
-      signature,
-    });
+
+    return res
+      .status(200)
+      .json({
+        message: 'success',
+        signature: transaction.signatures.find(
+          (signature) =>
+            signature.publicKey.toBase58() ===
+            signingOracle.publicKey.toBase58()
+        ).signature,
+      });
   } else {
     return res.status(400).json({
       message: 'error',
