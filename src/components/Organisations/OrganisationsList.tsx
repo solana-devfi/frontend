@@ -10,12 +10,12 @@ import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import AddOrganisationLink from './AddOrganisationLink';
+import { useEffect, useState } from 'react';
 
 interface OrganisationsListProps {}
 
 const OrganisationsList = ({}: OrganisationsListProps) => {
-  const { data: asd, status } = useSession();
-  const { data } = useUserOrganisations();
+  const { data: session, status } = useSession();
 
   const { wallet } = useWallet();
   const { connection } = useConnection();
@@ -25,6 +25,22 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
     process.env.PROGRAM_ID,
     provider
   );
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch('/api/organisations', {
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+        },
+      });
+      const data = await response.json();
+      setData(data);
+    };
+    fetchData();
+  }, []);
+
+  console.log(data);
 
   if (status !== 'authenticated') {
     return (
@@ -37,32 +53,32 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
   return (
     <>
       <ul className="mt-8 space-y-4 pb-4">
-        {data?.data.map((organisation) => (
+        {data?.map((organisation) => (
           <li
-            key={organisation.login}
+            key={organisation.owner.login}
             className="flex items-center justify-between rounded-md border-2 px-6 py-4 text-slate-200 dark:border-slate-200"
           >
             <div>
               <div className="mb-1 flex items-center space-x-2">
                 <Image
-                  src={organisation.avatar_url}
-                  alt={organisation.login + ' avatar'}
+                  src={organisation.owner.avatar_url}
+                  alt={organisation.owner.login + ' avatar'}
                   width={36}
                   height={36}
                   className="rounded-full"
                 />
                 <h3 className="text-2xl font-bold transition-colors hover:underline dark:text-slate-200 dark:hover:text-slate-300">
-                  <Link href={'/organisations/' + organisation.login}>
-                    {organisation.login}
+                  <Link href={'/organisations/' + organisation.owner.login}>
+                    {organisation.owner.login}
                   </Link>
                 </h3>
               </div>
               <p className="mb-1 dark:text-slate-400">
-                {organisation.description || 'No description found'}
+                {organisation.owner.description || 'No description found'}
               </p>
               <span className="font-mono dark:text-slate-400">
                 {getWalletFromSeed(
-                  organisation.login,
+                  organisation.owner.login,
                   program.programId
                 ).toString()}
               </span>
