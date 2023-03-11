@@ -6,7 +6,7 @@ import {
 } from '@/utils/wallet';
 import { Program } from '@project-serum/anchor';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import AddOrganisationLink from './AddOrganisationLink';
@@ -60,7 +60,6 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
               <p className="mb-1 dark:text-slate-400">
                 {organisation.description || 'No description found'}
               </p>
-              {/* TODO: fetch from smart contract */}
               <span className="font-mono dark:text-slate-400">
                 {getWalletFromSeed(
                   organisation.login,
