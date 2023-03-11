@@ -1,29 +1,107 @@
-import { Popover, Transition } from '@headlessui/react';
+import { Fragment, useState } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { CheckIcon } from '@heroicons/react/outline';
 
-export default function DepositFundsPopup() {
+interface MoneyFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (amount: number) => void;
+}
+
+export default function DepositFundsPopup({
+  isOpen,
+  onClose,
+  onSubmit,
+}: MoneyFormProps) {
+  const [amount, setAmount] = useState('');
+
+  function handleAmountChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setAmount(event.target.value);
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    onSubmit(Number(amount));
+  }
+
   return (
-    <Popover className="relative">
-      <Popover.Button>Solutions</Popover.Button>
-
-      <Transition
-        enter="transition duration-100 ease-out"
-        enterFrom="transform scale-95 opacity-0"
-        enterTo="transform scale-100 opacity-100"
-        leave="transition duration-75 ease-out"
-        leaveFrom="transform scale-100 opacity-100"
-        leaveTo="transform scale-95 opacity-0"
+    <Transition.Root show={isOpen} as={Fragment}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-10 overflow-y-auto"
+        onClose={onClose}
       >
-        <Popover.Panel className="absolute z-10">
-          <div className="grid grid-cols-2">
-            <a href="/analytics">Analytics</a>
-            <a href="/engagement">Engagement</a>
-            <a href="/security">Security</a>
-            <a href="/integrations">Integrations</a>
-          </div>
+        <div className="flex min-h-screen items-center justify-center px-4 pt-32 pb-20 text-center sm:block sm:p-0">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
 
-          <img src="/solutions.jpg" alt="" />
-        </Popover.Panel>
-      </Transition>
-    </Popover>
+          <span
+            className="hidden sm:inline-block sm:h-screen sm:align-middle"
+            aria-hidden="true"
+          >
+            &#8203;
+          </span>
+
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            enterTo="opacity-100 translate-y-0 sm:scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+          >
+            <div className="inline-block transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle">
+              <form onSubmit={handleSubmit}>
+                <div className="sm:flex sm:items-start">
+                  <div className="mt-3 w-full text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg font-medium leading-6 text-gray-900"
+                    >
+                      Enter Deposit Amount
+                    </Dialog.Title>
+                    <div className="mt-2">
+                      <input
+                        type="number"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="0.00"
+                        value={amount}
+                        onChange={handleAmountChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                  <button
+                    type="submit"
+                    className="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+                  >
+                    Submit
+                  </button>
+                  <button
+                    type="button"
+                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    onClick={onClose}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </Transition.Child>
+        </div>
+      </Dialog>
+    </Transition.Root>
   );
 }
