@@ -1,28 +1,18 @@
+import idl from '@/data/idl.json';
 import useOrganisationRepos from '@/hooks/useOrganisationRepos';
 import { GithubOrganisation } from '@/hooks/useUserOrganisations';
-import Image from 'next/image';
-import RepoCard from './RepoCard';
 import {
-  createProvider,
   createProviderWithConnection,
   getWalletFromSeed,
 } from '@/utils/wallet';
-import idl from '@/data/idl.json';
-import {
-  useAnchorWallet,
-  useWallet,
-  useConnection,
-} from '@solana/wallet-adapter-react';
-import { Program, getProvider } from '@project-serum/anchor';
-import {
-  Connection,
-  clusterApiUrl,
-  sendAndConfirmTransaction,
-} from '@solana/web3.js';
 import * as anchor from '@project-serum/anchor';
+import { Program } from '@project-serum/anchor';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Button } from '../Layout/Button';
-import { sign } from './../../../node_modules/@stablelib/ed25519/ed25519';
+import DepositFundsPopup from './DepositFundsPopup';
+import RepoCard from './RepoCard';
 
 interface OrganisationDetailsProps extends GithubOrganisation {}
 
@@ -54,17 +44,30 @@ const OrganisationDetails = ({
     }
   }, [wallet]);
 
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+
+  const handleSubmit = (amount: number) => {
+    transferSol(amount);
+    setShowPopup(false);
+  };
+
   // make form to put amt in
   function transferSol(amount) {
-    const transaction = new anchor.web3.Transaction().add(
-      anchor.web3.SystemProgram.transfer({
-        fromPubkey: publicKey,
-        toPubkey: walletAddress,
-        lamports: amount * 1000000000,
-      })
-    );
+    try {
+      const transaction = new anchor.web3.Transaction().add(
+        anchor.web3.SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: walletAddress,
+          lamports: amount * 1000000000,
+        })
+      );
 
-    sendTransaction(transaction, connection);
+      sendTransaction(transaction, connection, {
+        maxRetries: 5,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const { data } = useOrganisationRepos(login);
@@ -87,11 +90,12 @@ const OrganisationDetails = ({
           <Button
             className="rounded-lg py-2 px-4 text-base"
             buttonProps={{
-              onClick: () => transferSol(0.01),
+              onClick: () => setShowPopup(true),
             }}
           >
             Deposit Funds
           </Button>
+          <DepositFundsPopup />
         </div>
         <a
           href={`https://github.com/${login}`}

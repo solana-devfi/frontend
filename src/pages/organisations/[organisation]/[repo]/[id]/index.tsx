@@ -2,18 +2,18 @@ import { Container } from '@/components/Layout/Container';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
 import ItemDetails from '@/components/Item/ItemDetails';
-import organisations from '@/data/organisations';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import useRepoIssues from '@/hooks/useRepoIssues';
+import { useEffect, useState } from 'react';
 
 const ItemPage = () => {
   const router = useRouter();
-  const { organisation: organisationName, repo: repoName, id } = router.query;
-
-  const item = organisations
-    .find((organisation) => organisation.name === organisationName)
-    ?.repos.find((repo) => repo.name === repoName)
-    ?.latestItems.find((item) => item.id === +id.toString());
+  const {
+    organisation: organisationName,
+    repo: repoName,
+    id: issueNumber,
+  } = router.query;
 
   return (
     <>
@@ -27,17 +27,11 @@ const ItemPage = () => {
       <Header />
       <main className="dark:bg-slate-900">
         <Container>
-          {item ? (
-            <ItemDetails
-              {...item}
-              repoName={repoName.toString()}
-              organisationName={organisationName.toString()}
-            />
-          ) : (
-            <h1 className="text-4xl font-extrabold dark:text-slate-200">
-              No item found!
-            </h1>
-          )}
+          <ItemDetails
+            issueNumber={issueNumber.toString()}
+            organisationName={organisationName.toString()}
+            repoName={repoName.toString()}
+          />
         </Container>
       </main>
       <Footer />

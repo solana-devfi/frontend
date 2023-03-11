@@ -6,6 +6,7 @@ import createWebhook from '@/pages/api/githubWebhook';
 import RepoDetails from '@/components/Repo/RepoDetails';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import useRepoIssues from '@/hooks/useRepoIssues';
 
 const RepoPage = () => {
   const router = useRouter();

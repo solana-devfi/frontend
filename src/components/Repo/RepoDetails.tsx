@@ -5,7 +5,7 @@ import createWebhook from '@/pages/api/githubWebhook';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
 import Avatars from './Avatars';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface RepoDetailsProps {
   repoName: string;
@@ -26,6 +26,7 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
     organisationName.toString(),
     repoName.toString()
   );
+
   const repo = reposData?.data.find((repo) => repo.name === repoName);
   if (!repo) {
     return (
@@ -82,7 +83,6 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
               <th className="py-3 pl-4">NAME</th>
               <th className="py-3 pl-4">CONTRIBUTORS</th>
               <th className="py-3 pl-4">UPDATED</th>
-              <th className="py-3 pl-4">BOUNTY</th>
               <th className="py-3 pl-4">STATUS</th>
             </tr>
           </thead>
@@ -109,11 +109,6 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
                       <span>
                         {new Date(item.updated_at).toLocaleDateString()}{' '}
                         {new Date(item.updated_at).toLocaleTimeString()}
-                      </span>
-                    </td>
-                    <td className="py-4 pl-4">
-                      <span className="font-bold dark:text-green-700">
-                        1.1 SOL
                       </span>
                     </td>
                     <td className="py-4 pl-4">{item.state}</td>
@@ -163,7 +158,10 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
                     </td>
                     <td className="py-4 pl-4">
                       <span className="font-bold dark:text-green-700">
-                        1.1 SOL
+                        {
+                          //  @ts-ignore
+                          item.bounty
+                        }
                       </span>
                     </td>
                     <td className="py-4 pl-4">{item.state}</td>
