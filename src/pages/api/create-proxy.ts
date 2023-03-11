@@ -24,13 +24,11 @@ export default async function handler(
   res: NextApiResponse
 ): Promise<void> {
   if (req.method === 'POST') {
-    const { signature, recentBlockhash, publicKey, id, isOrg } = JSON.parse(
+    const { recentBlockhash, publicKey, id, isOrg } = JSON.parse(
       req.body
     );
     const anchorPublicKey = new PublicKey(publicKey);
-    const anchorSignature = Buffer.from(signature.data);
 
-    console.log({ signature, recentBlockhash, publicKey, id, isOrg });
     const proxy = getProxyFromSeed(id, program.programId);
 
     const transaction = await program.methods
@@ -42,21 +40,13 @@ export default async function handler(
         signer: anchorPublicKey,
         systemProgram: anchor.web3.SystemProgram.programId,
       })
-      // .signers([signingOracle])
       .transaction();
     transaction.recentBlockhash = recentBlockhash;
     transaction.feePayer = anchorPublicKey;
-    transaction.addSignature(anchorPublicKey, anchorSignature);
 
-    transaction.signatures.forEach((signature) => {
-      if (signature.publicKey.toBase58() === anchorPublicKey.toBase58()) {
-        signature.signature = anchorSignature;
-      }
-    });
-    console.log(transaction);
+    transaction.partialSign(signingOracle);
 
-    await provider.sendAndConfirm(transaction, [signingOracle]);
-    return res.status(200).json({ message: 'success' });
+    return res.status(200).json({ message: 'success', signature: transaction.signatures.find(signature => signature.publicKey == signingOracle.publicKey).signature });
   } else {
     return res.status(400).json({
       message: 'error',
