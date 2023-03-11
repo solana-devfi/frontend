@@ -1,10 +1,9 @@
 import { Octokit } from '@octokit/rest';
 import { createAppAuth } from '@octokit/auth-app';
 import * as anchor from '@project-serum/anchor';
-import { GitToEarn } from '@/data/idl';
-import idl from '@/data/idl.json';
 import { createProvider, getWalletFromSeed } from '@/utils/wallet';
 import { NextApiRequest, NextApiResponse } from 'next';
+import GIT_TO_EARN_IDL from '@/data/idl';
 
 const authConfig = {
   appId: process.env.GITHUB_APP_ID,
@@ -23,7 +22,7 @@ const signingOracle = anchor.web3.Keypair.fromSecretKey(
 );
 const provider = createProvider(new anchor.Wallet(signingOracle));
 const program = new anchor.Program(
-  idl as any as GitToEarn,
+  GIT_TO_EARN_IDL,
   process.env.PROGRAM_ID,
   provider
 );

@@ -12,6 +12,9 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
+      retry(failureCount, error) {
+        return failureCount < 3;
+      },
     },
   },
 });

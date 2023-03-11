@@ -18,6 +18,7 @@ const nextConfig = {
 
     PROGRAM_ID: process.env.PROGRAM_ID,
     SIGNING_ORACLE_PRIVATE_KEY: process.env.SIGNING_ORACLE_PRIVATE_KEY,
+    SIGNING_ORACLE_ADDRESS: process.env.SIGNING_ORACLE_ADDRESS,
   },
 };
 

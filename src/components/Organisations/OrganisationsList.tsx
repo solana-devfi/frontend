@@ -1,20 +1,19 @@
+import GIT_TO_EARN_IDL from '@/data/idl';
 import useUserOrganisations from '@/hooks/useUserOrganisations';
+import {
+  createProviderWithConnection,
+  getWalletFromSeed
+} from '@/utils/wallet';
+import { Program } from '@project-serum/anchor';
+import {
+  useConnection,
+  useWallet
+} from '@solana/wallet-adapter-react';
 import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '../Layout/Button';
 import AddOrganisationLink from './AddOrganisationLink';
-import {
-  useAnchorWallet,
-  useConnection,
-  useWallet,
-} from '@solana/wallet-adapter-react';
-import idl from '@/data/idl.json';
-import {
-  createProviderWithConnection,
-  getWalletFromSeed,
-} from '@/utils/wallet';
-import { Program } from '@project-serum/anchor';
 
 interface OrganisationsListProps {}
 
@@ -22,12 +21,12 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
   const { status } = useSession();
   const { data } = useUserOrganisations();
 
-  const { publicKey, sendTransaction, wallet } = useWallet();
+  const { wallet } = useWallet();
   const { connection } = useConnection();
   const provider = createProviderWithConnection(connection, wallet);
   const program = new Program(
-    idl as any,
-    '8KFc1kae5g8LqAwmZHskgaSYjaHXpt9PCRwKNtuajgAa',
+    GIT_TO_EARN_IDL,
+    process.env.PROGRAM_ID,
     provider
   );
 

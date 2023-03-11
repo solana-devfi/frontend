@@ -1,50 +1,14 @@
-import idl from '@/data/idl.json';
 import useOrganisationRepos from '@/hooks/useOrganisationRepos';
 import useRepoIssues from '@/hooks/useRepoIssues';
 import useRepoPRs from '@/hooks/useRepoPRs';
-import { createProviderWithConnection, getProxyFromSeed } from '@/utils/wallet';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
-import * as anchor from '@project-serum/anchor';
-import { Program } from '@project-serum/anchor';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
 import Avatars from './Avatars';
 
 interface RepoDetailsProps {
   repoName: string;
   organisationName: string;
 }
-
-const createProxy = ({
-  publicKey,
-  id,
-  isOrg,
-  recentBlockhash,
-}: {
-  publicKey: PublicKey;
-  id: string;
-  isOrg: boolean;
-  recentBlockhash: string;
-}) => {
-  return fetch('/api/create-proxy', {
-    method: 'POST',
-    body: JSON.stringify({
-      publicKey,
-      id,
-      isOrg,
-      recentBlockhash,
-    }),
-  }).then(
-    (res) =>
-      res.json() as Promise<{
-        message: string;
-        signature: Buffer;
-      }>
-  );
-};
 
 const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
   const { data: reposData } = useOrganisationRepos(organisationName);
@@ -56,69 +20,6 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
     organisationName.toString(),
     repoName.toString()
   );
-  const [recentBlockhash, setRecentBlockhash] = useState<string>();
-  const { publicKey, sendTransaction, wallet } = useWallet();
-  const { connection } = useConnection();
-  const { status, data: signature } = useQuery(
-    ['create-proxy'],
-    () =>
-      createProxy({
-        id: 'marcuspang',
-        isOrg: false,
-        publicKey,
-        recentBlockhash,
-      }),
-    {
-      enabled: Boolean(publicKey && recentBlockhash),
-    }
-  );
-
-  useEffect(() => {
-    if (connection) {
-      connection
-        .getLatestBlockhash('finalized')
-        .then((res) => setRecentBlockhash(res.blockhash));
-    }
-  }, [connection]);
-
-  useEffect(() => {
-    if (signature && connection && wallet && publicKey) {
-      const provider = createProviderWithConnection(connection, wallet);
-      const program = new Program(
-        idl as any,
-        '8KFc1kae5g8LqAwmZHskgaSYjaHXpt9PCRwKNtuajgAa',
-        provider
-      );
-      const proxy = getProxyFromSeed('marcuspang', program.programId);
-      const signingOraclePubKey = new anchor.web3.PublicKey(
-        'BH3d9LpBpfYaqFaQdc3Ty1Ak5YWzMUiSdq6JoE9GEgrU'
-      );
-      const [state, _] = anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from('state')],
-        program.programId
-      );
-      program.methods
-        .initializeUserOwner('marcuspang', false)
-        .accounts({
-          walletProxy: proxy,
-          state,
-          signingOracle: signingOraclePubKey,
-          signer: publicKey,
-          systemProgram: anchor.web3.SystemProgram.programId,
-        })
-        .transaction()
-        .then((transaction) => {
-          transaction.recentBlockhash = recentBlockhash;
-          transaction.feePayer = publicKey;
-
-          transaction.addSignature(
-            signingOraclePubKey,
-            Buffer.from(signature.signature)
-          );
-          return sendTransaction(transaction, connection, { maxRetries: 5 });
-        });
-    }
-  }, [connection, signature, publicKey, recentBlockhash, sendTransaction, wallet]);
 
   const repo = reposData?.data.find((repo) => repo.name === repoName);
   if (!repo) {

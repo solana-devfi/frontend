@@ -1,6 +1,7 @@
-import idl from '@/data/idl.json';
+import GIT_TO_EARN_IDL from '@/data/idl';
 import useOrganisationRepos from '@/hooks/useOrganisationRepos';
 import { GithubOrganisation } from '@/hooks/useUserOrganisations';
+import useUserSOLBalanceStore from '@/stores/useUserSOLBalanceStore';
 import {
   createProviderWithConnection,
   getWalletFromSeed,
@@ -8,7 +9,7 @@ import {
 import * as anchor from '@project-serum/anchor';
 import { Program } from '@project-serum/anchor';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { PublicKey } from '@solana/web3.js';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Button } from '../Layout/Button';
@@ -28,8 +29,8 @@ const OrganisationDetails = ({
   const { connection } = useConnection();
   const provider = createProviderWithConnection(connection, wallet);
   const program = new Program(
-    idl as any,
-    '8KFc1kae5g8LqAwmZHskgaSYjaHXpt9PCRwKNtuajgAa',
+    GIT_TO_EARN_IDL,
+    process.env.PROGRAM_ID,
     provider
   );
   const walletAddress = getWalletFromSeed(login, program.programId);
@@ -39,11 +40,9 @@ const OrganisationDetails = ({
     if (wallet) {
       connection
         .getBalance(walletAddress)
-        .then((balance) => balance)
-        .then((balance) => balance / 1000000000)
-        .then((balance) => setBalance(balance));
+        .then((balance) => setBalance(balance / LAMPORTS_PER_SOL));
     }
-  }, [wallet]);
+  }, []);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -59,7 +58,7 @@ const OrganisationDetails = ({
         anchor.web3.SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: walletAddress,
-          lamports: amount * 1000000000,
+          lamports: amount * LAMPORTS_PER_SOL,
         })
       );
 
