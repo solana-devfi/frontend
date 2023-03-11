@@ -4,13 +4,32 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '../Layout/Button';
 import AddOrganisationLink from './AddOrganisationLink';
-import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
+import {
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from '@solana/wallet-adapter-react';
+import idl from '@/data/idl.json';
+import {
+  createProviderWithConnection,
+  getWalletFromSeed,
+} from '@/utils/wallet';
+import { Program } from '@project-serum/anchor';
 
 interface OrganisationsListProps {}
 
 const OrganisationsList = ({}: OrganisationsListProps) => {
   const { status } = useSession();
   const { data } = useUserOrganisations();
+
+  const { publicKey, sendTransaction, wallet } = useWallet();
+  const { connection } = useConnection();
+  const provider = createProviderWithConnection(connection, wallet);
+  const program = new Program(
+    idl as any,
+    '8KFc1kae5g8LqAwmZHskgaSYjaHXpt9PCRwKNtuajgAa',
+    provider
+  );
 
   if (status !== 'authenticated') {
     return (
@@ -56,7 +75,10 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
               </p>
               {/* TODO: fetch from smart contract */}
               <span className="font-mono dark:text-slate-400">
-                FQ6tQRVERHA29n88WQeut1G3QfJ66bSMM733vFoqUXpr
+                {getWalletFromSeed(
+                  organisation.login,
+                  program.programId
+                ).toString()}
               </span>
             </div>
             <div>
