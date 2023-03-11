@@ -46,7 +46,7 @@ export default async function handler(
 
     transaction.partialSign(signingOracle);
 
-    return res.status(200).json({ message: 'success', signature: transaction.signatures.find(signature => signature.publicKey == signingOracle.publicKey).signature });
+    return res.status(200).json({ message: 'success', signature: transaction.signatures.find(signature => signature.publicKey.toBase58() === signingOracle.publicKey.toBase58()).signature });
   } else {
     return res.status(400).json({
       message: 'error',

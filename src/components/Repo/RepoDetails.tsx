@@ -51,10 +51,10 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
     repoName.toString()
   );
   const [recentBlockhash, setRecentBlockhash] = useState<string>();
-  const { publicKey, signTransaction, wallet } = useWallet();
+  const { publicKey, sendTransaction, wallet } = useWallet();
   // const wallet = useAnchorWallet();
   const { connection } = useConnection();
-  const { } = useQuery(
+  const { status, data: oracleSignature } = useQuery(
     ['create-proxy'],
     () =>
       createProxy({
@@ -63,46 +63,60 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
         publicKey,
         recentBlockhash,
       }),
-    { enabled: Boolean(publicKey && recentBlockhash) }
+    {
+      enabled: Boolean(publicKey && recentBlockhash),
+    }
   );
 
   useEffect(() => {
     if (connection && wallet && publicKey) {
-      const provider = createProviderWithConnection(connection, wallet);
-      const program = new Program(
-        idl as any,
-        '8KFc1kae5g8LqAwmZHskgaSYjaHXpt9PCRwKNtuajgAa',
-        provider
-      );
-
-      const proxy = getProxyFromSeed('marcuspang', program.programId);
-
-      const [state, _] = anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from('state')],
-        program.programId
-      );
-      program.methods
-        .initializeUserOwner('marcuspang', false)
-        .accounts({
-          walletProxy: proxy,
-          state,
-          signingOracle: 'BH3d9LpBpfYaqFaQdc3Ty1Ak5YWzMUiSdq6JoE9GEgrU',
-          signer: publicKey,
-          systemProgram: anchor.web3.SystemProgram.programId,
-        })
-        .transaction()
-        .then((transaction) => {
-          connection.getLatestBlockhash('finalized').then((res) => {
-            transaction.recentBlockhash = res.blockhash;
-            setRecentBlockhash(res.blockhash);
-            transaction.feePayer = publicKey;
-            return signTransaction(transaction).then((res) => {
-              console.log(res);
-            });
-          });
-        });
+      connection.getLatestBlockhash('finalized').then(res => {
+        setRecentBlockhash(res.blockhash);
+      });
     }
-  }, [connection, publicKey, signTransaction, wallet]);
+  }, [connection, publicKey, sendTransaction, wallet]);
+
+  useEffect(() => {
+    if (status === 'success' && !oracleSignature.bodyUsed && recentBlockhash) {
+      oracleSignature.json().then(({ signature: { data: signature } }) => {
+        const provider = createProviderWithConnection(connection, wallet);
+        const program = new Program(
+          idl as any,
+          '8KFc1kae5g8LqAwmZHskgaSYjaHXpt9PCRwKNtuajgAa',
+          provider
+        );
+
+        const proxy = getProxyFromSeed('marcuspang', program.programId);
+
+        const [state, _] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from('state')],
+          program.programId
+        );
+
+        const signingOraclePubKey = new anchor.web3.PublicKey('BH3d9LpBpfYaqFaQdc3Ty1Ak5YWzMUiSdq6JoE9GEgrU');
+        program.methods
+          .initializeUserOwner('marcuspang', false)
+          .accounts({
+            walletProxy: proxy,
+            state,
+            signingOracle: signingOraclePubKey,
+            signer: publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+          })
+          .transaction()
+          .then((transaction) => {
+            transaction.recentBlockhash = recentBlockhash;
+            transaction.feePayer = publicKey;
+
+            console.log(signature);
+            console.log(recentBlockhash);
+            transaction.addSignature(signingOraclePubKey, signature);
+
+            return sendTransaction(transaction, connection, { maxRetries: 5 });
+          });
+      });
+    }
+  }, [status, oracleSignature, recentBlockhash]);
 
   const repo = reposData?.data.find((repo) => repo.name === repoName);
   if (!repo) {
