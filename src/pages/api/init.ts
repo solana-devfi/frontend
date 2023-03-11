@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import * as anchor from '@project-serum/anchor'
-import { createProvider } from "@/utils/wallet";
+import { createProvider, getProxyFromSeed } from "@/utils/wallet";
 import { GitToEarn } from '@/data/idl';
 import idl from '@/data/idl.json';
 
@@ -18,19 +18,23 @@ const [state, _] = anchor.web3.PublicKey.findProgramAddressSync(
   program.programId
 );
 
-
-export default async function payload(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method === 'POST') {
-    const { signature, publicKey, devId, isOrg } = req.body;
+    const { signature, publicKey, id, isOrg } = req.body;
 
-    await program.methods.initializeUserOwner(devId, isOrg).accounts({
-      walletProxy: devProxy,
+    const proxy = getProxyFromSeed(id, program.programId);
+
+    const transaction = await program.methods.initializeUserOwner(id, isOrg).accounts({
+      walletProxy: proxy,
       state,
       signingOracle: signingOracle.publicKey,
-      signer: program.provider.publicKey,
+      signer: publicKey,
       systemProgram: anchor.web3.SystemProgram.programId,
-    }).signers([signingOracle]).rpc();
+    }).signers([signingOracle]).transaction();
 
+    transaction.addSignature(publicKey, signature);
+
+    await provider.send(transaction);
   } else {
     res.status(400)
   }
