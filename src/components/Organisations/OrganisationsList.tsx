@@ -2,23 +2,19 @@ import GIT_TO_EARN_IDL from '@/data/idl';
 import useUserOrganisations from '@/hooks/useUserOrganisations';
 import {
   createProviderWithConnection,
-  getWalletFromSeed
+  getWalletFromSeed,
 } from '@/utils/wallet';
 import { Program } from '@project-serum/anchor';
-import {
-  useConnection,
-  useWallet
-} from '@solana/wallet-adapter-react';
-import { signIn, useSession } from 'next-auth/react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '../Layout/Button';
 import AddOrganisationLink from './AddOrganisationLink';
 
 interface OrganisationsListProps {}
 
 const OrganisationsList = ({}: OrganisationsListProps) => {
-  const { status } = useSession();
+  const { data: asd, status } = useSession();
   const { data } = useUserOrganisations();
 
   const { wallet } = useWallet();
@@ -32,16 +28,8 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
 
   if (status !== 'authenticated') {
     return (
-      <div>
-        <Button
-          color="blue"
-          className="mt-4 rounded-lg"
-          buttonProps={{
-            onClick: () => signIn(),
-          }}
-        >
-          Login to GitHub
-        </Button>
+      <div className="mt-4 text-xl dark:text-slate-200">
+        Please login to GitHub to see your organisations.
       </div>
     );
   }
