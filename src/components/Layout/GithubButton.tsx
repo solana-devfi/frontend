@@ -29,7 +29,7 @@ export function GithubButton() {
   return (
     <Button
       color="slate"
-      className="rounded-lg py-2 px-4 text-base"
+      className="w-auto rounded-lg py-2 px-4 text-base"
       buttonProps={{
         onClick: () => signOut(),
       }}
