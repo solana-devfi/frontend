@@ -37,7 +37,13 @@ const createProxy = ({
       isOrg,
       recentBlockhash,
     }),
-  });
+  }).then(
+    (res) =>
+      res.json() as Promise<{
+        message: string;
+        signature: anchor.web3.SignaturePubkeyPair;
+      }>
+  );
 };
 
 const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
@@ -54,7 +60,7 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
   const { publicKey, signTransaction, wallet } = useWallet();
   // const wallet = useAnchorWallet();
   const { connection } = useConnection();
-  const { } = useQuery(
+  const { data } = useQuery(
     ['create-proxy'],
     () =>
       createProxy({
@@ -67,42 +73,50 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
   );
 
   useEffect(() => {
-    if (connection && wallet && publicKey) {
-      const provider = createProviderWithConnection(connection, wallet);
-      const program = new Program(
-        idl as any,
-        '8KFc1kae5g8LqAwmZHskgaSYjaHXpt9PCRwKNtuajgAa',
-        provider
-      );
+    if (connection) {
+      connection
+        .getLatestBlockhash('finalized')
+        .then((res) => setRecentBlockhash(res.blockhash));
+    }
+  }, [connection]);
 
-      const proxy = getProxyFromSeed('marcuspang', program.programId);
+  useEffect(() => {
+    if (data) {
+      if (connection && wallet && publicKey) {
+        const provider = createProviderWithConnection(connection, wallet);
+        const program = new Program(
+          idl as any,
+          '8KFc1kae5g8LqAwmZHskgaSYjaHXpt9PCRwKNtuajgAa',
+          provider
+        );
 
-      const [state, _] = anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from('state')],
-        program.programId
-      );
-      program.methods
-        .initializeUserOwner('marcuspang', false)
-        .accounts({
-          walletProxy: proxy,
-          state,
-          signingOracle: 'BH3d9LpBpfYaqFaQdc3Ty1Ak5YWzMUiSdq6JoE9GEgrU',
-          signer: publicKey,
-          systemProgram: anchor.web3.SystemProgram.programId,
-        })
-        .transaction()
-        .then((transaction) => {
-          connection.getLatestBlockhash('finalized').then((res) => {
-            transaction.recentBlockhash = res.blockhash;
-            setRecentBlockhash(res.blockhash);
+        const proxy = getProxyFromSeed('marcuspang', program.programId);
+
+        const [state, _] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from('state')],
+          program.programId
+        );
+        program.methods
+          .initializeUserOwner('marcuspang', false)
+          .accounts({
+            walletProxy: proxy,
+            state,
+            signingOracle: 'BH3d9LpBpfYaqFaQdc3Ty1Ak5YWzMUiSdq6JoE9GEgrU',
+            signer: publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+          })
+          .transaction()
+          .then((transaction) => {
+            transaction.recentBlockhash = recentBlockhash;
             transaction.feePayer = publicKey;
+            console.log('Transaction', transaction);
             return signTransaction(transaction).then((res) => {
-              console.log(res);
+              console.log('Result', res);
             });
           });
-        });
+      }
     }
-  }, [connection, publicKey, signTransaction, wallet]);
+  }, [data]);
 
   const repo = reposData?.data.find((repo) => repo.name === repoName);
   if (!repo) {
@@ -166,31 +180,31 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
           <tbody className="dark:text-slate-200">
             {pullRequestsData?.data.length
               ? pullRequestsData.data.map((item) => (
-                <tr
-                  key={item.id}
-                  className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
-                >
-                  <td className="py-4 pl-4">{item.number}</td>
-                  <td className="py-4 pl-4">
-                    <Link
-                      href={`/organisations/${repo.full_name}/${item.number}`}
-                      className="hover:underline"
-                    >
-                      {item.title}
-                    </Link>
-                  </td>
-                  <td className="py-4 pl-4">
-                    <Avatars assignees={item.assignees} />
-                  </td>
-                  <td className="py-4 pl-4">
-                    <span>
-                      {new Date(item.updated_at).toLocaleDateString()}{' '}
-                      {new Date(item.updated_at).toLocaleTimeString()}
-                    </span>
-                  </td>
-                  <td className="py-4 pl-4">{item.state}</td>
-                </tr>
-              ))
+                  <tr
+                    key={item.id}
+                    className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
+                  >
+                    <td className="py-4 pl-4">{item.number}</td>
+                    <td className="py-4 pl-4">
+                      <Link
+                        href={`/organisations/${repo.full_name}/${item.number}`}
+                        className="hover:underline"
+                      >
+                        {item.title}
+                      </Link>
+                    </td>
+                    <td className="py-4 pl-4">
+                      <Avatars assignees={item.assignees} />
+                    </td>
+                    <td className="py-4 pl-4">
+                      <span>
+                        {new Date(item.updated_at).toLocaleDateString()}{' '}
+                        {new Date(item.updated_at).toLocaleTimeString()}
+                      </span>
+                    </td>
+                    <td className="py-4 pl-4">{item.state}</td>
+                  </tr>
+                ))
               : undefined}
           </tbody>
         </table>
@@ -211,39 +225,39 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
           <tbody className="dark:text-slate-200">
             {issuesData?.data.length
               ? issuesData.data.map((item) => (
-                <tr
-                  key={item.id}
-                  className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
-                >
-                  <td className="py-4 pl-4">{item.number}</td>
-                  <td className="py-4 pl-4">
-                    <Link
-                      href={`/organisations/${repo.full_name}/${item.number}`}
-                      className="hover:underline"
-                    >
-                      {item.title}
-                    </Link>
-                  </td>
-                  <td className="py-4 pl-4">
-                    <Avatars assignees={item.assignees} />
-                  </td>
-                  <td className="py-4 pl-4">
-                    <span>
-                      {new Date(item.updated_at).toLocaleDateString()}{' '}
-                      {new Date(item.updated_at).toLocaleTimeString()}
-                    </span>
-                  </td>
-                  <td className="py-4 pl-4">
-                    <span className="font-bold dark:text-green-700">
-                      {
-                        //  @ts-ignore
-                        item.bounty
-                      }
-                    </span>
-                  </td>
-                  <td className="py-4 pl-4">{item.state}</td>
-                </tr>
-              ))
+                  <tr
+                    key={item.id}
+                    className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
+                  >
+                    <td className="py-4 pl-4">{item.number}</td>
+                    <td className="py-4 pl-4">
+                      <Link
+                        href={`/organisations/${repo.full_name}/${item.number}`}
+                        className="hover:underline"
+                      >
+                        {item.title}
+                      </Link>
+                    </td>
+                    <td className="py-4 pl-4">
+                      <Avatars assignees={item.assignees} />
+                    </td>
+                    <td className="py-4 pl-4">
+                      <span>
+                        {new Date(item.updated_at).toLocaleDateString()}{' '}
+                        {new Date(item.updated_at).toLocaleTimeString()}
+                      </span>
+                    </td>
+                    <td className="py-4 pl-4">
+                      <span className="font-bold dark:text-green-700">
+                        {
+                          //  @ts-ignore
+                          item.bounty
+                        }
+                      </span>
+                    </td>
+                    <td className="py-4 pl-4">{item.state}</td>
+                  </tr>
+                ))
               : undefined}
           </tbody>
         </table>

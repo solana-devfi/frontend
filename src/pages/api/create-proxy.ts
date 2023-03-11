@@ -24,10 +24,9 @@ export default async function handler(
   res: NextApiResponse
 ): Promise<void> {
   if (req.method === 'POST') {
-    const { recentBlockhash, publicKey, id, isOrg } = JSON.parse(
-      req.body
-    );
-    const anchorPublicKey = new PublicKey(publicKey);
+    const { recentBlockhash, publicKey, id, isOrg } = JSON.parse(req.body);
+    console.log({ recentBlockhash, publicKey, id, isOrg });
+    const userPublicKey = new PublicKey(publicKey);
 
     const proxy = getProxyFromSeed(id, program.programId);
 
@@ -37,16 +36,22 @@ export default async function handler(
         walletProxy: proxy,
         state,
         signingOracle: signingOracle.publicKey,
-        signer: anchorPublicKey,
+        signer: userPublicKey,
         systemProgram: anchor.web3.SystemProgram.programId,
       })
       .transaction();
     transaction.recentBlockhash = recentBlockhash;
-    transaction.feePayer = anchorPublicKey;
+    transaction.feePayer = userPublicKey;
 
     transaction.partialSign(signingOracle);
-
-    return res.status(200).json({ message: 'success', signature: transaction.signatures.find(signature => signature.publicKey == signingOracle.publicKey).signature });
+    const signature = transaction.signatures.find(
+      (signature) =>
+        signature.publicKey.toBase58() == signingOracle.publicKey.toBase58()
+    );
+    return res.status(200).json({
+      message: 'success',
+      signature,
+    });
   } else {
     return res.status(400).json({
       message: 'error',
