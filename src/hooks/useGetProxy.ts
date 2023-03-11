@@ -10,19 +10,22 @@ const useGetProxy = ({ githubName }: { githubName: string }) => {
   const { wallet } = useWallet();
   const [proxyAccount, setProxyAccount] = useState<AccountInfo<Buffer>>();
 
-  const fetchProxyAccount = useCallback(async () => {
-    if (connection && wallet && githubName) {
-      const provider = createProviderWithConnection(connection, wallet);
-      const program = new Program(
-        GIT_TO_EARN_IDL,
-        process.env.PROGRAM_ID,
-        provider
-      );
-      const proxy = getProxyFromSeed(githubName, program.programId);
-      const accountInfo = await connection.getAccountInfo(proxy);
-      setProxyAccount(accountInfo);
-    }
-  }, [connection, githubName, wallet]);
+  const fetchProxyAccount = useCallback(
+    async (name?: string) => {
+      if (connection && wallet && (name || githubName)) {
+        const provider = createProviderWithConnection(connection, wallet);
+        const program = new Program(
+          GIT_TO_EARN_IDL,
+          process.env.PROGRAM_ID,
+          provider
+        );
+        const proxy = getProxyFromSeed(name || githubName, program.programId);
+        const accountInfo = await connection.getAccountInfo(proxy);
+        setProxyAccount(accountInfo);
+      }
+    },
+    [connection, githubName, wallet]
+  );
 
   useEffect(() => {
     fetchProxyAccount();

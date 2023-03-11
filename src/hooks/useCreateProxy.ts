@@ -3,14 +3,14 @@ import { createProviderWithConnection, getProxyFromSeed } from '@/utils/wallet';
 import { Program } from '@project-serum/anchor';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 
 const SIGNING_ORACLE_PUB_KEY = new PublicKey(
   process.env.SIGNING_ORACLE_ADDRESS
 );
 
-const createProxy = async ({
+const retrieveOracleSignatureForProxy = async ({
   publicKey,
   id,
   isOrg,
@@ -56,20 +56,20 @@ const useCreateProxy = ({
   }, [connection]);
 
   const { data: signature } = useQuery(
-    ['create-proxy'],
+    ['create-proxy', githubName],
     () =>
-      createProxy({
+      retrieveOracleSignatureForProxy({
         id: githubName,
         isOrg,
         publicKey,
         recentBlockhash,
       }),
     {
-      enabled: Boolean(publicKey && recentBlockhash),
+      enabled: Boolean(publicKey && recentBlockhash && githubName),
     }
   );
 
-  useEffect(() => {
+  const createProxy = useCallback(async () => {
     if (signature && connection && wallet && publicKey && recentBlockhash) {
       const provider = createProviderWithConnection(connection, wallet);
       const program = new Program(
@@ -83,7 +83,7 @@ const useCreateProxy = ({
         [Buffer.from('state')],
         program.programId
       );
-      program.methods
+      const transaction = await program.methods
         .initializeUserOwner(githubName, false)
         .accounts({
           walletProxy: proxy,
@@ -92,19 +92,16 @@ const useCreateProxy = ({
           signer: publicKey,
           systemProgram: SystemProgram.programId,
         })
-        .transaction()
-        .then((transaction) => {
-          transaction.recentBlockhash = recentBlockhash;
-          transaction.feePayer = publicKey;
+        .transaction();
+      transaction.recentBlockhash = recentBlockhash;
+      transaction.feePayer = publicKey;
 
-          transaction.addSignature(
-            SIGNING_ORACLE_PUB_KEY,
-            Buffer.from(signature.signature)
-          );
-          console.log(transaction);
-          return sendTransaction(transaction, connection, { maxRetries: 5 });
-        })
-        .catch((e) => console.error(e));
+      transaction.addSignature(
+        SIGNING_ORACLE_PUB_KEY,
+        Buffer.from(signature.signature)
+      );
+      console.log(transaction);
+      await sendTransaction(transaction, connection, { maxRetries: 5 });
     }
   }, [
     connection,
@@ -116,7 +113,7 @@ const useCreateProxy = ({
     githubName,
   ]);
 
-  return;
+  return { createProxy };
 };
 
 export default useCreateProxy;
