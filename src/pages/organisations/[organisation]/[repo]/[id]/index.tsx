@@ -10,6 +10,7 @@ function ItemPage() {
   if (!router.isReady) {
     return <div>loading...</div>;
   }
+
   const { organisation, repo, id } = router.query;
 
   return (
