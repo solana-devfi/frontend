@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 
 export type GithubIssue = Awaited<
   ReturnType<RestEndpointMethods['issues']['listForRepo']>
->['data'][number] & { bounty: string };
+>['data'][number] & { bounty?: string };
 
 const fetchRepoIssues = (
   accessToken: string,
