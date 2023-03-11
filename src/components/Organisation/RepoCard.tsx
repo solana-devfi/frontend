@@ -28,9 +28,9 @@ const RepoCard = ({
           </p>
         </div>
         <div>
-          <span className="text-2xl font-bold dark:text-slate-200">
+          {/* <span className="text-2xl font-bold dark:text-slate-200">
             1.1 SOL
-          </span>
+          </span> */}
         </div>
       </div>
       <div>

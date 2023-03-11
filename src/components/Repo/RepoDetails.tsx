@@ -46,9 +46,9 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
           <h2 className="mb-2 text-xl font-semibold dark:text-slate-400">
             {repo.full_name}
           </h2>
-          <span className="text-3xl font-bold dark:text-slate-200">
+          {/* <span className="text-3xl font-bold dark:text-slate-200">
             1.1 SOL
-          </span>
+          </span> */}
         </div>
         <div className="pt-8">
           {/* <button

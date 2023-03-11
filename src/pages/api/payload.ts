@@ -1,9 +1,9 @@
 import { Octokit } from '@octokit/rest';
 import { createAppAuth } from '@octokit/auth-app';
 import * as anchor from '@project-serum/anchor';
-import { clusterApiUrl, Connection } from '@solana/web3.js';
-import { GitToEarn } from './idl';
-import idl from './idl.json';
+import { GitToEarn } from '@/data/idl';
+import idl from '@/data/idl.json';
+import { createProvider, getWalletFromSeed } from '@/utils/wallet';
 
 const authConfig = {
   appId: process.env.GITHUB_APP_ID,
@@ -20,7 +20,7 @@ const octokit = new Octokit({
 const signingOracle = anchor.web3.Keypair.fromSecretKey(
   JSON.parse(process.env.SIGNING_ORACLE_PRIVATE_KEY)
 );
-const provider = createProvider();
+const provider = createProvider(new anchor.Wallet(signingOracle));
 const program = new anchor.Program(
   idl as any as GitToEarn,
   process.env.PROGRAM_ID,
@@ -104,8 +104,8 @@ async function handleWebhookEvent(event: any, payload: any) {
             new anchor.BN(bounty * anchor.web3.LAMPORTS_PER_SOL)
           )
           .accounts({
-            senderWallet: getWalletFromSeed(fromSeed),
-            receiverWallet: getWalletFromSeed(toSeed),
+            senderWallet: getWalletFromSeed(fromSeed, program.programId),
+            receiverWallet: getWalletFromSeed(toSeed, program.programId),
             state,
             signingOracle: signingOracle.publicKey,
             signer: program.provider.publicKey,
@@ -118,26 +118,4 @@ async function handleWebhookEvent(event: any, payload: any) {
   } catch (error) {
     console.error('Failed to handle webhook event:', error);
   }
-}
-
-function createProvider(): anchor.Provider {
-  const endpoint = clusterApiUrl('devnet');
-  const connection = new Connection(endpoint);
-
-  const wallet = new anchor.Wallet(signingOracle);
-
-  const provider = new anchor.AnchorProvider(connection, wallet, {
-    preflightCommitment: 'recent',
-    commitment: 'recent',
-  });
-
-  return provider;
-}
-
-function getWalletFromSeed(seed: string): anchor.web3.PublicKey {
-  const [account, _] = anchor.web3.PublicKey.findProgramAddressSync(
-    [Buffer.from('wallet'), Buffer.from(seed)],
-    program.programId
-  );
-  return account;
 }

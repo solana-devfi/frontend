@@ -38,9 +38,7 @@ const LatestItems = ({ repoName, organisationName }: LatestItemsProps) => {
               <span className="font-normal">#{item.number}</span>
               <span> {item.title}</span>
             </div>
-            <div>
-              <span className="font-normal">1.1 SOL</span>
-            </div>
+            <div>{/* <span className="font-normal">1.1 SOL</span> */}</div>
           </li>
         ))}
     </ul>
