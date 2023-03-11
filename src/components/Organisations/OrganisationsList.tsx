@@ -4,12 +4,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '../Layout/Button';
 import AddOrganisationLink from './AddOrganisationLink';
+import * as anchor from '@project-serum/anchor';
+import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
 
 interface OrganisationsListProps {}
 
 const OrganisationsList = ({}: OrganisationsListProps) => {
   const { status } = useSession();
   const { data } = useUserOrganisations();
+  const wallet = useAnchorWallet();
+
+  console.log(wallet);
 
   if (status !== 'authenticated') {
     return (
@@ -26,6 +31,15 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
       </div>
     );
   }
+
+  function getWalletFromSeed(seed: string): anchor.web3.PublicKey {
+    const [account, _] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from('wallet'), Buffer.from(seed)],
+      program.programId
+    );
+    return account;
+  }
+
   return (
     <>
       <ul className="mt-8 space-y-4 pb-4">

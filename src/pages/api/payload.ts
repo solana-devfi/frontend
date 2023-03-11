@@ -1,9 +1,9 @@
 import { Octokit } from '@octokit/rest';
 import { createAppAuth } from '@octokit/auth-app';
-import * as anchor from "@project-serum/anchor";
-import { clusterApiUrl, Connection } from "@solana/web3.js";
-import { GitToEarn } from "./idl";
-import idl from "./idl.json";
+import * as anchor from '@project-serum/anchor';
+import { clusterApiUrl, Connection } from '@solana/web3.js';
+import { GitToEarn } from './idl';
+import idl from './idl.json';
 
 const authConfig = {
   appId: process.env.GITHUB_APP_ID,
@@ -17,14 +17,23 @@ const octokit = new Octokit({
   auth: authConfig,
 });
 
-const signingOracle = anchor.web3.Keypair.fromSecretKey(JSON.parse(process.env.SIGNING_ORACLE_PRIVATE_KEY));
+const signingOracle = anchor.web3.Keypair.fromSecretKey(
+  JSON.parse(process.env.SIGNING_ORACLE_PRIVATE_KEY)
+);
 const provider = createProvider();
-const program = new anchor.Program(idl as any as GitToEarn, process.env.PROGRAM_ID, provider);
-const [state, _] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("state")], program.programId);
+const program = new anchor.Program(
+  idl as any as GitToEarn,
+  process.env.PROGRAM_ID,
+  provider
+);
+const [state, _] = anchor.web3.PublicKey.findProgramAddressSync(
+  [Buffer.from('state')],
+  program.programId
+);
 
 // Handle incoming webhook events
 export default async function payload(req: any, res: any): Promise<void> {
-  console.log(req.body)
+  console.log(req.body);
   try {
     const event = req.headers['x-github-event'];
     const payload = req.body;
@@ -53,36 +62,34 @@ export default async function payload(req: any, res: any): Promise<void> {
 
 async function handleWebhookEvent(event: any, payload: any) {
   try {
-    if (
-      event === 'pull_request' &&
-      (payload.action === 'closed')
-    ) {
+    if (event === 'pull_request' && payload.action === 'closed') {
       const merged = payload.pull_request.merged;
       if (merged) {
         const owner = payload.repository.owner.login;
         const repo = payload.repository.name;
 
-
         let regex = /Fixes #(\d+)/;
         let match = payload.pull_request.body.match(regex);
         if (!match) {
-          throw "Linked Issue not found";
+          throw 'Linked Issue not found';
         }
 
         const issueNumber = match[1];
-        const issueDescription = (await octokit.rest.issues.get({
-          owner,
-          repo,
-          issue_number: issueNumber,
-          headers: {
-            'X-GitHub-Api-Version': '2022-11-28'
-          }
-        })).data.body;
+        const issueDescription = (
+          await octokit.rest.issues.get({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            headers: {
+              'X-GitHub-Api-Version': '2022-11-28',
+            },
+          })
+        ).data.body;
 
         regex = /Bounty (\d+(?:\.\d+)?)SOL/;
         match = issueDescription.match(regex);
         if (!match) {
-          throw "Linked Bounty not found";
+          throw 'Linked Bounty not found';
         }
 
         const bounty = match[1];
@@ -90,16 +97,22 @@ async function handleWebhookEvent(event: any, payload: any) {
         const fromSeed = owner;
         const toSeed = payload.pull_request.user.login;
 
-        await program.methods.transfer(owner, toSeed, new anchor.BN(bounty * anchor.web3.LAMPORTS_PER_SOL)).accounts(
-          {
+        await program.methods
+          .transfer(
+            owner,
+            toSeed,
+            new anchor.BN(bounty * anchor.web3.LAMPORTS_PER_SOL)
+          )
+          .accounts({
             senderWallet: getWalletFromSeed(fromSeed),
             receiverWallet: getWalletFromSeed(toSeed),
             state,
             signingOracle: signingOracle.publicKey,
             signer: program.provider.publicKey,
             systemProgram: anchor.web3.SystemProgram.programId,
-          }
-        ).signers([signingOracle]).rpc();
+          })
+          .signers([signingOracle])
+          .rpc();
       }
     }
   } catch (error) {
@@ -107,21 +120,24 @@ async function handleWebhookEvent(event: any, payload: any) {
   }
 }
 
-function getWalletFromSeed(seed: string): anchor.web3.PublicKey {
-  const [account, _] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("wallet"), Buffer.from(seed)], program.programId);
-  return account;
-}
-
 function createProvider(): anchor.Provider {
-  const endpoint = clusterApiUrl("devnet");
+  const endpoint = clusterApiUrl('devnet');
   const connection = new Connection(endpoint);
 
   const wallet = new anchor.Wallet(signingOracle);
 
   const provider = new anchor.AnchorProvider(connection, wallet, {
-    preflightCommitment: "recent",
-    commitment: "recent",
+    preflightCommitment: 'recent',
+    commitment: 'recent',
   });
 
   return provider;
+}
+
+function getWalletFromSeed(seed: string): anchor.web3.PublicKey {
+  const [account, _] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from('wallet'), Buffer.from(seed)],
+    program.programId
+  );
+  return account;
 }

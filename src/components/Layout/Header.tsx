@@ -148,7 +148,7 @@ export function Header() {
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
             <GithubButton />
-            <WalletMultiButtonDynamic className="!hidden !rounded-lg !py-2 !h-auto !text-base !transition-colors dark:!bg-blue-700 dark:hover:!bg-blue-900 md:!flex" />
+            <WalletMultiButtonDynamic className="!hidden !h-auto !rounded-lg !py-2 !text-base !transition-colors dark:!bg-blue-700 dark:hover:!bg-blue-900 md:!flex" />
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>
