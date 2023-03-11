@@ -45,12 +45,12 @@ const OrganisationDetails = ({
     }
   }, [wallet]);
 
-  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const handleSubmit = (amount: number) => {
+  function handleFormSubmit(amount: number) {
     transferSol(amount);
-    setShowPopup(false);
-  };
+    setIsFormOpen(false);
+  }
 
   // make form to put amt in
   function transferSol(amount) {
@@ -74,7 +74,6 @@ const OrganisationDetails = ({
   const { data } = useOrganisationRepos(login);
   return (
     <div>
-      <DepositFundsPopup />
       <div className="mb-6">
         <div className="flex items-center justify-between space-x-4">
           <div className="flex flex-row space-x-2">
@@ -92,11 +91,16 @@ const OrganisationDetails = ({
           <Button
             className="rounded-lg py-2 px-4 text-base"
             buttonProps={{
-              onClick: () => setShowPopup(true),
+              onClick: () => setIsFormOpen(true),
             }}
           >
             Deposit Funds
           </Button>
+          <DepositFundsPopup
+            isOpen={isFormOpen}
+            onClose={() => setIsFormOpen(false)}
+            onSubmit={handleFormSubmit}
+          />
         </div>
         <a
           href={`https://github.com/${login}`}
