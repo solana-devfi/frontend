@@ -4,6 +4,7 @@ import * as anchor from '@project-serum/anchor';
 import { GitToEarn } from '@/data/idl';
 import idl from '@/data/idl.json';
 import { createProvider, getWalletFromSeed } from '@/utils/wallet';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const authConfig = {
   appId: process.env.GITHUB_APP_ID,
@@ -32,7 +33,10 @@ const [state, _] = anchor.web3.PublicKey.findProgramAddressSync(
 );
 
 // Handle incoming webhook events
-export default async function payload(req: any, res: any): Promise<void> {
+export default async function payload(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   console.log(req.body);
   try {
     const event = req.headers['x-github-event'];
@@ -54,7 +58,7 @@ export default async function payload(req: any, res: any): Promise<void> {
     // Handle the webhook event
     await handleWebhookEvent(event, payload);
 
-    res.status(200).send('OK');
+    return res.status(200).send('OK');
   } catch (error) {
     console.error('Failed to handle webhook event:', error);
   }

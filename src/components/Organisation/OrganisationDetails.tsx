@@ -3,12 +3,12 @@ import useOrganisationRepos from '@/hooks/useOrganisationRepos';
 import { GithubOrganisation } from '@/hooks/useUserOrganisations';
 import {
   createProviderWithConnection,
-  getProxyFromSeed,
   getWalletFromSeed,
 } from '@/utils/wallet';
 import * as anchor from '@project-serum/anchor';
 import { Program } from '@project-serum/anchor';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Button } from '../Layout/Button';
