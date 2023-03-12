@@ -1,7 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { GithubRepositoryWithOrganisation } from '@/hooks/useUserOrganisations';
 import { App } from '@octokit/app';
-import { request } from '@octokit/request';
-import { getSession } from 'next-auth/react';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const app = new App({
   appId: process.env.GITHUB_APP_ID,
@@ -16,31 +15,34 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  try {
-    const repoList = [];
+  if (req.method === 'GET') {
+    try {
+      const repoList: GithubRepositoryWithOrganisation[] = [];
 
-    const { data } = await app.octokit.request('/app');
-    console.log('authenticated as %s', data.name);
-    for await (const { installation } of app.eachInstallation.iterator()) {
-      for await (const { octokit, repository } of app.eachRepository.iterator({
-        installationId: installation.id,
-      })) {
-        if (repository.archived) {
-          continue;
+      const { data } = await app.octokit.request('/app');
+      console.log('Authenticated as %s', data.name);
+      for await (const { installation } of app.eachInstallation.iterator()) {
+        for await (const { repository } of app.eachRepository.iterator({
+          installationId: installation.id,
+        })) {
+          if (repository.archived) {
+            continue;
+          }
+
+          // check if organisation is already in the repoList
+          if (repoList.find((org) => org.owner.id === repository.owner.id)) {
+            continue;
+          }
+
+          repoList.push(repository);
         }
-
-        // check if organisation is already in the repoList
-        if (repoList.find((org) => org.owner.id === repository.owner.id)) {
-          continue;
-        }
-
-        repoList.push(repository);
       }
-    }
 
-    res.status(200).send(repoList);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+      return res.status(200).send({ message: 'Success', repoList });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).send('Internal Server Error');
+    }
   }
+  return res.status(404).send('Not found');
 }

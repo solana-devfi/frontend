@@ -6,11 +6,10 @@ import {
 } from '@/utils/wallet';
 import { Program } from '@project-serum/anchor';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { signIn, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import AddOrganisationLink from './AddOrganisationLink';
-import { useEffect, useState } from 'react';
 
 interface OrganisationsListProps {}
 
@@ -25,22 +24,7 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
     process.env.PROGRAM_ID,
     provider
   );
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch('/api/organisations', {
-        headers: {
-          Authorization: `Bearer ${session?.accessToken}`,
-        },
-      });
-      const data = await response.json();
-      setData(data);
-    };
-    fetchData();
-  }, []);
-
-  console.log(data);
+  const { data } = useUserOrganisations();
 
   if (status !== 'authenticated') {
     return (
@@ -53,7 +37,7 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
   return (
     <>
       <ul className="mt-8 space-y-4 pb-4">
-        {data?.map((organisation) => (
+        {data?.repoList.map((organisation) => (
           <li
             key={organisation.owner.login}
             className="flex items-center justify-between rounded-md border-2 px-6 py-4 text-slate-200 dark:border-slate-200"
@@ -74,7 +58,7 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
                 </h3>
               </div>
               <p className="mb-1 dark:text-slate-400">
-                {organisation.owner.description || 'No description found'}
+                {organisation.description || 'No description found'}
               </p>
               <span className="font-mono dark:text-slate-400">
                 {getWalletFromSeed(

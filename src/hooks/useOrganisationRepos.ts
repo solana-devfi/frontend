@@ -15,6 +15,7 @@ const fetchOrganisationRepos = (
   const octokit = new Octokit({
     auth: accessToken,
   });
+
   return octokit.rest.repos.listForOrg({
     org: organisationName,
   });
@@ -22,10 +23,11 @@ const fetchOrganisationRepos = (
 
 const useOrganisationRepos = (organisationName: string) => {
   const { data, status } = useSession();
+
   return useQuery(
     ['repos', organisationName],
     () => fetchOrganisationRepos(data?.accessToken, organisationName),
-    { enabled: status === 'authenticated' }
+    { enabled: Boolean(organisationName) && status === 'authenticated' }
   );
 };
 

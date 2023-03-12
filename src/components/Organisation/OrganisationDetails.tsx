@@ -1,10 +1,10 @@
 import GIT_TO_EARN_IDL from '@/data/idl';
-import useOrganisationRepos from '@/hooks/useOrganisationRepos';
-import { GithubOrganisation } from '@/hooks/useUserOrganisations';
-import useUserSOLBalanceStore from '@/stores/useUserSOLBalanceStore';
+import {
+  GithubRepositoryWithOrganisation
+} from '@/hooks/useUserOrganisations';
 import {
   createProviderWithConnection,
-  getWalletFromSeed,
+  getWalletFromSeed
 } from '@/utils/wallet';
 import * as anchor from '@project-serum/anchor';
 import { Program } from '@project-serum/anchor';
@@ -16,16 +16,13 @@ import { Button } from '../Layout/Button';
 import DepositFundsPopup from './DepositFundsPopup';
 import RepoCard from './RepoCard';
 
-interface OrganisationDetailsProps extends GithubOrganisation {}
+interface OrganisationDetailsProps {
+  orgRepos: GithubRepositoryWithOrganisation[];
+}
 
-const OrganisationDetails = ({
-  avatar_url,
-  description,
-  login,
-  url,
-}: OrganisationDetailsProps) => {
+// Will only be rendered if orgRepos.length > 0
+const OrganisationDetails = ({ orgRepos }: OrganisationDetailsProps) => {
   const { publicKey, sendTransaction, wallet } = useWallet();
-  // const wallet = useAnchorWallet();
   const { connection } = useConnection();
   const provider = createProviderWithConnection(connection, wallet);
   const program = new Program(
@@ -33,8 +30,14 @@ const OrganisationDetails = ({
     process.env.PROGRAM_ID,
     provider
   );
-  const walletAddress = getWalletFromSeed(login, program.programId);
+  const organisation = orgRepos[0].owner;
+
+  const walletAddress = getWalletFromSeed(
+    organisation.login,
+    program.programId
+  );
   const [balance, setBalance] = useState(0);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     if (wallet) {
@@ -44,15 +47,14 @@ const OrganisationDetails = ({
     }
   }, []);
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
 
-  function handleFormSubmit(amount: number) {
-    transferSol(amount);
+  const handleFormSubmit = async (amount: number) => {
+    await transferSol(amount);
     setIsFormOpen(false);
-  }
+  };
 
   // make form to put amt in
-  function transferSol(amount) {
+  const transferSol = async (amount: number) => {
     try {
       const transaction = new anchor.web3.Transaction().add(
         anchor.web3.SystemProgram.transfer({
@@ -62,29 +64,28 @@ const OrganisationDetails = ({
         })
       );
 
-      sendTransaction(transaction, connection, {
+      await sendTransaction(transaction, connection, {
         maxRetries: 5,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
-  }
+  };
 
-  const { data } = useOrganisationRepos(login);
   return (
     <div>
       <div className="mb-6">
         <div className="flex items-center justify-between space-x-4">
           <div className="flex flex-row space-x-2">
             <Image
-              src={avatar_url}
-              alt={login + ' avatar'}
+              src={organisation.avatar_url}
+              alt={organisation.login + ' avatar'}
               width={64}
               height={64}
               className="rounded-full"
             />
             <h1 className="mb-2 text-5xl font-extrabold dark:text-slate-200">
-              {login}
+              {organisation.login}
             </h1>
           </div>
           <Button
@@ -102,17 +103,17 @@ const OrganisationDetails = ({
           />
         </div>
         <a
-          href={`https://github.com/${login}`}
+          href={`https://github.com/${organisation.login}`}
           target="_blank"
           className="text-xl font-semibold hover:underline dark:text-slate-500 dark:hover:text-slate-600"
           rel="noreferrer"
         >
-          {`https://github.com/${login}`}
+          {`https://github.com/${organisation.login}`}
         </a>
         <div className="my-2 -space-y-1">
           <h2 className="text-lg font-bold dark:text-slate-100">Description</h2>
           <p className="text-xl dark:text-slate-500">
-            {description || 'No description found'}
+            {'No description found'}
           </p>
         </div>
         <div className="my-2 -space-y-1">
@@ -127,7 +128,7 @@ const OrganisationDetails = ({
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        {data?.data.map((repo) => (
+        {orgRepos.map((repo) => (
           <RepoCard key={repo.name} {...repo} />
         ))}
       </div>

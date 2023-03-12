@@ -1,25 +1,29 @@
 import type { RestEndpointMethods } from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/method-types';
-import { Octokit } from '@octokit/rest';
 import { useSession } from 'next-auth/react';
 import { useQuery } from 'react-query';
 
-export type GithubOrganisation = Awaited<
-  ReturnType<RestEndpointMethods['orgs']['listForAuthenticatedUser']>
->['data'][number];
+export type GithubRepositoryWithOrganisation = Awaited<
+  ReturnType<RestEndpointMethods['apps']['listReposAccessibleToInstallation']>
+>['data']['repositories'][number];
 
-const fetchUserOrganisations = (accessToken: string) => {
-  const octokit = new Octokit({
-    auth: accessToken,
+const fetchData = async ({ accessToken }: { accessToken: string }) => {
+  const response = await fetch('/api/organisations', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
-  return octokit.rest.orgs.listForAuthenticatedUser();
+  return (await response.json()) as {
+    message: string;
+    repoList: GithubRepositoryWithOrganisation[];
+  };
 };
 
 const useUserOrganisations = () => {
   const { data, status } = useSession();
   return useQuery(
     ['organisations'],
-    () => fetchUserOrganisations(data?.accessToken),
-    { enabled: status === 'authenticated' }
+    () => fetchData({ accessToken: data?.accessToken }),
+    { enabled: status === 'authenticated' && Boolean(data?.accessToken) }
   );
 };
 

@@ -3,16 +3,16 @@ import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
 import OrganisationDetails from '@/components/Organisation/OrganisationDetails';
 import useUserOrganisations from '@/hooks/useUserOrganisations';
+import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 const OrganisationPage = () => {
   const router = useRouter();
   const { organisation: orgName } = router.query;
-
   const { data } = useUserOrganisations();
-  const organisation = data?.data.find(
-    (organisation) => organisation.login === orgName
+  const orgRepos = data?.repoList.filter(
+    (repo) => repo.owner.login === orgName
   );
 
   return (
@@ -27,8 +27,8 @@ const OrganisationPage = () => {
       <Header />
       <main className="dark:bg-slate-900">
         <Container>
-          {organisation ? (
-            <OrganisationDetails {...organisation} />
+          {orgRepos?.length ? (
+            <OrganisationDetails orgRepos={orgRepos} />
           ) : (
             <h1 className="text-4xl font-extrabold dark:text-slate-200">
               No organisation found!
