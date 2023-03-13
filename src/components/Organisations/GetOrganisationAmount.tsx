@@ -38,5 +38,5 @@ export default function GetOrganisationAmount({
     return <div>0 Sol</div>;
   }
 
-  return <div>{balance} Sol</div>;
+  return <div>{balance} Sol1</div>;
 }
