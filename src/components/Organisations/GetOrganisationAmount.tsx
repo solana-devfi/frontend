@@ -24,7 +24,6 @@ export default function GetOrganisationAmount({
 
   const walletAddress = getWalletFromSeed(login, program.programId);
   const [balance, setBalance] = useState(0);
-  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     if (wallet) {
