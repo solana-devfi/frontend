@@ -15,7 +15,7 @@ import GetOrganisationAmount from './GetOrganisationAmount';
 interface OrganisationsListProps {}
 
 const OrganisationsList = ({}: OrganisationsListProps) => {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
 
   const { wallet } = useWallet();
   const { connection } = useConnection();
