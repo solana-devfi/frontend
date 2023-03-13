@@ -10,13 +10,10 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import AddOrganisationLink from './AddOrganisationLink';
-import GetOrganisationAmount from './GetOrganisationAmount';
+import OrganisationBalance from './OrganisationBalance';
 
-interface OrganisationsListProps {}
-
-const OrganisationsList = ({}: OrganisationsListProps) => {
+const OrganisationsList = () => {
   const { status } = useSession();
-
   const { wallet } = useWallet();
   const { connection } = useConnection();
   const provider = createProviderWithConnection(connection, wallet);
@@ -38,44 +35,53 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
   return data ? (
     <>
       <ul className="mt-8 space-y-4 pb-4">
-        {data?.repoList.map((organisation) => (
-          <li
-            key={organisation.owner.login}
-            className="flex items-center justify-between rounded-md border-2 px-6 py-4 text-slate-200 dark:border-slate-200"
-          >
-            <div>
-              <div className="mb-1 flex items-center space-x-2">
-                <Image
-                  src={organisation.owner.avatar_url}
-                  alt={organisation.owner.login + ' avatar'}
-                  width={36}
-                  height={36}
-                  className="rounded-full"
-                />
-                <h3 className="text-2xl font-bold transition-colors hover:underline dark:text-slate-200 dark:hover:text-slate-300">
-                  <Link href={'/organisations/' + organisation.owner.login}>
-                    {organisation.owner.login}
-                  </Link>
-                </h3>
+        {data?.repoList
+          // Remove repos with duplicate organisations
+          .filter(
+            (item, pos, self) =>
+              self.findIndex(
+                (repo) => repo.owner.login === item.owner.login
+              ) === pos
+          )
+          .map((organisation) => (
+            <li
+              key={organisation.owner.login}
+              className="flex items-center justify-between rounded-md border-2 px-6 py-4 text-slate-200 dark:border-slate-200"
+            >
+              <div>
+                <div className="mb-1 flex items-center space-x-2">
+                  <Image
+                    src={organisation.owner.avatar_url}
+                    alt={organisation.owner.login + ' avatar'}
+                    width={36}
+                    height={36}
+                    className="rounded-full"
+                  />
+                  <h3 className="text-2xl font-bold transition-colors hover:underline dark:text-slate-200 dark:hover:text-slate-300">
+                    <Link href={'/organisations/' + organisation.owner.login}>
+                      {organisation.owner.login}
+                    </Link>
+                  </h3>
+                </div>
+                <p className="mb-1 dark:text-slate-400">
+                  {organisation.description || 'No description found'}
+                </p>
+                <span className="font-mono dark:text-slate-400">
+                  {getWalletFromSeed(
+                    organisation.owner.login,
+                    program.programId
+                  ).toBase58()}
+                </span>
               </div>
-              <p className="mb-1 dark:text-slate-400">
-                {organisation.description || 'No description found'}
-              </p>
-              <span className="font-mono dark:text-slate-400">
-                {getWalletFromSeed(
-                  organisation.owner.login,
-                  program.programId
-                ).toString()}
-              </span>
-            </div>
-            <div>
-              {/* TODO: fetch from smart contract */}
-              <span className="text-2xl font-bold">
-                <GetOrganisationAmount login={organisation.owner.login} />
-              </span>
-            </div>
-          </li>
-        ))}
+              <div>
+                <span className="text-2xl font-bold">
+                  <OrganisationBalance
+                    organisation={organisation.owner.login}
+                  />
+                </span>
+              </div>
+            </li>
+          ))}
       </ul>
       <AddOrganisationLink />
     </>
@@ -83,7 +89,6 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
     // make a loading skeleton
     <div className="mt-4 text-xl dark:text-slate-200">
       Loading organisations...
-      <AddOrganisationLink />
     </div>
   );
 };

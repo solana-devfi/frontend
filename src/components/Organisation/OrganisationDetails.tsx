@@ -1,5 +1,6 @@
 import GIT_TO_EARN_IDL from '@/data/idl';
 import { GithubRepositoryWithOrganisation } from '@/hooks/useUserOrganisations';
+import useWalletBalance from '@/hooks/useWalletBalance';
 import {
   createProviderWithConnection,
   getWalletFromSeed,
@@ -18,7 +19,6 @@ interface OrganisationDetailsProps {
   orgRepos: GithubRepositoryWithOrganisation[];
 }
 
-// Will only be rendered if orgRepos.length > 0
 const OrganisationDetails = ({ orgRepos }: OrganisationDetailsProps) => {
   const { publicKey, sendTransaction, wallet } = useWallet();
   const { connection } = useConnection();
@@ -28,22 +28,15 @@ const OrganisationDetails = ({ orgRepos }: OrganisationDetailsProps) => {
     process.env.PROGRAM_ID,
     provider
   );
+  // Will only be rendered if orgRepos.length > 0
   const organisation = orgRepos[0].owner;
-
-  const walletAddress = getWalletFromSeed(
+  const organisationPubKey = getWalletFromSeed(
     organisation.login,
     program.programId
   );
-  const [balance, setBalance] = useState(0);
-  const [isFormOpen, setIsFormOpen] = useState(false);
 
-  useEffect(() => {
-    if (wallet) {
-      connection
-        .getBalance(walletAddress)
-        .then((balance) => setBalance(balance / LAMPORTS_PER_SOL));
-    }
-  }, []);
+  const { data: balance, isLoading } = useWalletBalance(organisationPubKey);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleFormSubmit = async (amount: number) => {
     await transferSol(amount);
@@ -56,7 +49,7 @@ const OrganisationDetails = ({ orgRepos }: OrganisationDetailsProps) => {
       const transaction = new anchor.web3.Transaction().add(
         anchor.web3.SystemProgram.transfer({
           fromPubkey: publicKey,
-          toPubkey: walletAddress,
+          toPubkey: organisationPubKey,
           lamports: amount * LAMPORTS_PER_SOL,
         })
       );
@@ -118,12 +111,14 @@ const OrganisationDetails = ({ orgRepos }: OrganisationDetailsProps) => {
         <div className="my-2">
           <h2 className="text-2xl font-bold dark:text-slate-100">Wallet</h2>
           <p className="font-mono text-lg dark:text-slate-400">
-            {walletAddress.toString()}
+            {organisationPubKey.toString()}
           </p>
         </div>
         <div className="my-2">
           <h2 className="text-2xl font-bold dark:text-slate-100">Funds</h2>
-          <p className="text-lg dark:text-slate-400">{balance} SOL</p>
+          <p className="text-lg dark:text-slate-400">
+            {isLoading ? 'Loading...' : `${balance} SOL`}
+          </p>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">

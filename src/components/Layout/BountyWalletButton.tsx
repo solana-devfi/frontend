@@ -1,5 +1,5 @@
 import useCreateProxy from '@/hooks/useCreateProxy';
-import useGetProxy from '@/hooks/useGetProxy';
+import useGetBountyWallet from '@/hooks/useGetProxy';
 import { getWalletFromSeed } from '@/utils/wallet';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
@@ -7,12 +7,10 @@ import { useSession } from 'next-auth/react';
 import { twMerge } from 'tailwind-merge';
 import { Button } from './Button';
 
-interface ProxyButtonProps {}
-
-const ProxyButton = ({}: ProxyButtonProps) => {
+const ProxyButton = () => {
   const { data, status } = useSession();
   const { connected } = useWallet();
-  const { proxyAccount, fetchProxyAccount } = useGetProxy({
+  const { proxyAccount, fetchProxyAccount } = useGetBountyWallet({
     githubName: data?.user?.name,
   });
   const { createProxy } = useCreateProxy({

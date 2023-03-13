@@ -29,11 +29,6 @@ export default async function handler(
             continue;
           }
 
-          // check if organisation is already in the repoList
-          if (repoList.find((org) => org.owner.id === repository.owner.id)) {
-            continue;
-          }
-
           repoList.push(repository);
         }
       }

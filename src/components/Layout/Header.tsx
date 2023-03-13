@@ -5,7 +5,7 @@ import { Container } from './Container';
 import { GithubButton } from './GithubButton';
 import { Logo } from './Logo';
 import { MobileNavigation } from './MobileNavigation';
-import ProxyButton from './ProxyButton';
+import ProxyButton from './BountyWalletButton';
 
 export const WalletMultiButtonDynamic = dynamic(
   async () =>

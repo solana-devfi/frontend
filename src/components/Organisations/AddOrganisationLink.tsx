@@ -6,9 +6,7 @@ const DEV_FI_INSTALLATION_URL =
     ? 'https://github.com/apps/devfi-git-to-earn/installations/new'
     : 'https://github.com/apps/devfi-git-to-earn-dev/installations/new';
 
-interface AddOrganisationLinkProps {}
-
-const AddOrganisationLink = ({}: AddOrganisationLinkProps) => {
+const AddOrganisationLink = () => {
   const [popup, setPopup] = useState<Window>(null);
   const router = useRouter();
 
@@ -35,7 +33,7 @@ const AddOrganisationLink = ({}: AddOrganisationLinkProps) => {
   }, [popup, router]);
 
   return (
-    <p className="dark:text-slate-300">
+    <p className="pb-6 dark:text-slate-300">
       Don&apos;t see your organisation here?{' '}
       <span
         className="cursor-pointer underline transition-colors dark:hover:text-slate-400"
