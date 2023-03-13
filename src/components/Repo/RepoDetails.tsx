@@ -1,5 +1,5 @@
 import useOrganisationRepos from '@/hooks/useOrganisationRepos';
-import useRepoIssues from '@/hooks/useRepoIssues';
+import useRepoIssues, { BOUNTY_REGEX } from '@/hooks/useRepoIssues';
 import useRepoPRs from '@/hooks/useRepoPRs';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
@@ -77,44 +77,61 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
         </a>
       </div>
       <div className="relative overflow-x-auto rounded-lg dark:bg-slate-800">
-        <table className="w-full table-auto border-collapse text-left">
+        <table className="w-full table-fixed border-collapse text-left">
           <thead>
             <tr className="text-sm dark:text-slate-400">
               <th className="py-3 pl-4">NO.</th>
               <th className="py-3 pl-4">NAME</th>
               <th className="py-3 pl-4">CONTRIBUTORS</th>
               <th className="py-3 pl-4">UPDATED</th>
+              <th className="py-3 pl-4">BOUNTY</th>
               <th className="py-3 pl-4">STATUS</th>
             </tr>
           </thead>
           <tbody className="dark:text-slate-200">
             {pullRequestsData?.data.length
-              ? pullRequestsData.data.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
-                  >
-                    <td className="py-4 pl-4">{item.number}</td>
-                    <td className="py-4 pl-4">
-                      <Link
-                        href={`/organisations/${repo.full_name}/pulls/${item.number}`}
-                        className="hover:underline"
-                      >
-                        {item.title}
-                      </Link>
-                    </td>
-                    <td className="py-4 pl-4">
-                      <Avatars assignees={item.assignees} />
-                    </td>
-                    <td className="py-4 pl-4">
-                      <span>
-                        {new Date(item.updated_at).toLocaleDateString()}{' '}
-                        {new Date(item.updated_at).toLocaleTimeString()}
-                      </span>
-                    </td>
-                    <td className="py-4 pl-4">{item.state}</td>
-                  </tr>
-                ))
+              ? pullRequestsData.data.map((item) => {
+                  const bounty =
+                    item.body?.match(BOUNTY_REGEX)?.length > 1
+                      ? item.body?.match(BOUNTY_REGEX)[1]
+                      : '';
+                  return (
+                    <tr
+                      key={item.id}
+                      className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
+                    >
+                      <td className="py-4 pl-4">{item.number}</td>
+                      <td className="py-4 pl-4">
+                        <Link
+                          href={`/organisations/${repo.full_name}/pulls/${item.number}`}
+                          className="hover:underline"
+                        >
+                          {item.title}
+                        </Link>
+                      </td>
+                      <td className="py-4 pl-4">
+                        <Avatars assignees={item.assignees} />
+                      </td>
+                      <td className="py-4 pl-4">
+                        {' '}
+                        {bounty ? (
+                          <span className="font-bold dark:text-green-700">
+                            {bounty}
+                          </span>
+                        ) : (
+                          '-'
+                        )}
+                      </td>
+                      <td className="py-4 pl-4">
+                        <span>
+                          {new Date(item.updated_at).toLocaleDateString()}{' '}
+                          {new Date(item.updated_at).toLocaleTimeString()}
+                        </span>
+                      </td>
+                      <td className="py-4 pl-4">{item.state}</td>
+                    </tr>
+                  );
+                })
               : undefined}
           </tbody>
         </table>
@@ -123,7 +140,7 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
         Issues
       </h3>
       <div className="relative overflow-x-auto rounded-lg dark:bg-slate-800">
-        <table className="w-full table-auto border-collapse text-left shadow">
+        <table className="w-full table-fixed border-collapse text-left shadow">
           <thead>
             <tr className="text-sm dark:text-slate-400">
               <th className="py-3 pl-4">NO.</th>
@@ -136,40 +153,47 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
           </thead>
           <tbody className="dark:text-slate-200">
             {issuesData?.data.length
-              ? issuesData.data.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
-                  >
-                    <td className="py-4 pl-4">{item.number}</td>
-                    <td className="py-4 pl-4">
-                      <Link
-                        href={`/organisations/${repo.full_name}/issues/${item.number}`}
-                        className="hover:underline"
-                      >
-                        {item.title}
-                      </Link>
-                    </td>
-                    <td className="py-4 pl-4">
-                      <Avatars assignees={item.assignees} />
-                    </td>
-                    <td className="py-4 pl-4">
-                      <span>
-                        {new Date(item.updated_at).toLocaleDateString()}{' '}
-                        {new Date(item.updated_at).toLocaleTimeString()}
-                      </span>
-                    </td>
-                    <td className="py-4 pl-4">
-                      <span className="font-bold dark:text-green-700">
-                        {
-                          //  @ts-ignore
-                          item.bounty
-                        }
-                      </span>
-                    </td>
-                    <td className="py-4 pl-4">{item.state}</td>
-                  </tr>
-                ))
+              ? issuesData.data.map((item) => {
+                  const bounty =
+                    item.body?.match(BOUNTY_REGEX)?.length > 1
+                      ? item.body?.match(BOUNTY_REGEX)[1]
+                      : '';
+                  return (
+                    <tr
+                      key={item.id}
+                      className="transition-colors dark:bg-slate-900/80 dark:hover:bg-slate-900/60"
+                    >
+                      <td className="py-4 pl-4">{item.number}</td>
+                      <td className="py-4 pl-4">
+                        <Link
+                          href={`/organisations/${repo.full_name}/issues/${item.number}`}
+                          className="hover:underline"
+                        >
+                          {item.title}
+                        </Link>
+                      </td>
+                      <td className="py-4 pl-4">
+                        <Avatars assignees={item.assignees} />
+                      </td>
+                      <td className="py-4 pl-4">
+                        <span>
+                          {new Date(item.updated_at).toLocaleDateString()}{' '}
+                          {new Date(item.updated_at).toLocaleTimeString()}
+                        </span>
+                      </td>
+                      <td className="py-4 pl-4">
+                        {bounty ? (
+                          <span className="font-bold dark:text-green-700">
+                            {bounty}
+                          </span>
+                        ) : (
+                          '-'
+                        )}
+                      </td>
+                      <td className="py-4 pl-4">{item.state}</td>
+                    </tr>
+                  );
+                })
               : undefined}
           </tbody>
         </table>

@@ -45,8 +45,8 @@ const IssueDetails = ({
       : '';
 
   return (
-    <div>
-      <div className="pb-12">
+    <div className='pb-8'>
+      <div className="pb-8">
         <h1 className="mb-2 text-5xl font-extrabold dark:text-slate-200">
           #{issueNumber} {issue.title}{' '}
         </h1>
@@ -69,7 +69,7 @@ const IssueDetails = ({
       <div className="space-y-4 rounded-lg border-2 p-6 pt-4 dark:border-slate-700">
         <div>
           <h3 className="text-lg font-bold dark:text-slate-200">Description</h3>
-          <ReactMarkdown className="dark:text-slate-200">
+          <ReactMarkdown className="dark:text-slate-300">
             {issue.body || 'No description found'}
           </ReactMarkdown>
         </div>
