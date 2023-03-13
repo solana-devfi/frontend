@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 const OrganisationPage = () => {
   const router = useRouter();
   const { organisation: orgName } = router.query;
-  const { data } = useUserOrganisations();
+  const { data, isLoading } = useUserOrganisations();
   const orgRepos = data?.repoList.filter(
     (repo) => repo.owner.login === orgName
   );
@@ -31,7 +31,7 @@ const OrganisationPage = () => {
             <OrganisationDetails orgRepos={orgRepos} />
           ) : (
             <h1 className="text-4xl font-extrabold dark:text-slate-200">
-              No organisation found!
+              {isLoading ? 'Loading...' : 'No organisation found!'}
             </h1>
           )}
         </Container>

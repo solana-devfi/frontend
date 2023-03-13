@@ -1,11 +1,11 @@
-import ItemDetails from '@/components/Issue/IssueDetails';
+import IssueDetails from '@/components/Issue/IssueDetails';
 import { Container } from '@/components/Layout/Container';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
-function ItemPage() {
+function IssuePage() {
   const router = useRouter();
   if (!router.isReady) {
     return <div>loading...</div>;
@@ -25,7 +25,7 @@ function ItemPage() {
       <Header />
       <main className="dark:bg-slate-900">
         <Container>
-          <ItemDetails
+          <IssueDetails
             issueNumber={id.toString()}
             organisationName={organisation.toString()}
             repoName={repo.toString()}
@@ -37,4 +37,4 @@ function ItemPage() {
   );
 }
 
-export default ItemPage;
+export default IssuePage;

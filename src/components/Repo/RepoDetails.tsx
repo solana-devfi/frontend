@@ -39,7 +39,14 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
             {repo.name}
           </h1>
           <h2 className="mb-2 text-xl font-semibold dark:text-slate-400">
-            {repo.full_name}
+            <a
+              href={repo.html_url}
+              target="_blank"
+              rel="noreferrer"
+              className="transition-opacity hover:underline hover:opacity-90"
+            >
+              {repo.full_name}
+            </a>
           </h2>
           {/* <span className="text-3xl font-bold dark:text-slate-200">
             1.1 SOL
@@ -69,7 +76,7 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
           <ExternalLinkIcon className="mr-2 flex h-6 w-6" /> Add PR
         </a>
       </div>
-      <div className="relative mb-12 overflow-x-auto rounded-lg dark:bg-slate-800">
+      <div className="relative overflow-x-auto rounded-lg dark:bg-slate-800">
         <table className="w-full table-auto border-collapse text-left">
           <thead>
             <tr className="text-sm dark:text-slate-400">
@@ -90,7 +97,7 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
                     <td className="py-4 pl-4">{item.number}</td>
                     <td className="py-4 pl-4">
                       <Link
-                        href={`/organisations/${repo.full_name}/${item.number}`}
+                        href={`/organisations/${repo.full_name}/pulls/${item.number}`}
                         className="hover:underline"
                       >
                         {item.title}
@@ -112,14 +119,16 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
           </tbody>
         </table>
       </div>
-      <h3 className="pb-6 text-2xl font-bold dark:text-slate-200">Issues</h3>
+      <h3 className="mt-12 pb-6 text-2xl font-bold dark:text-slate-200">
+        Issues
+      </h3>
       <div className="relative overflow-x-auto rounded-lg dark:bg-slate-800">
         <table className="w-full table-auto border-collapse text-left shadow">
           <thead>
             <tr className="text-sm dark:text-slate-400">
               <th className="py-3 pl-4">NO.</th>
               <th className="py-3 pl-4">NAME</th>
-              <th className="py-3 pl-4">CONTRIBUTORS</th>
+              <th className="py-3 pl-4">ASSIGNEES</th>
               <th className="py-3 pl-4">UPDATED</th>
               <th className="py-3 pl-4">BOUNTY</th>
               <th className="py-3 pl-4">STATUS</th>
@@ -135,7 +144,7 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
                     <td className="py-4 pl-4">{item.number}</td>
                     <td className="py-4 pl-4">
                       <Link
-                        href={`/organisations/${repo.full_name}/${item.number}`}
+                        href={`/organisations/${repo.full_name}/issues/${item.number}`}
                         className="hover:underline"
                       >
                         {item.title}
