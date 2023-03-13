@@ -33,9 +33,5 @@ export default function GetOrganisationAmount({
     }
   }, []);
 
-  if (!balance) {
-    return <div>0 Sol</div>;
-  }
-
-  return <div>{balance} Sol</div>;
+  return <div>{balance || 0} SOL</div>;
 }

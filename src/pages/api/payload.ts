@@ -54,17 +54,6 @@ export default async function payload(
     //   return res.status(400).send('Invalid signature');
     // }
 
-    // Handle the webhook event
-    await handleWebhookEvent(event, payload);
-
-    return res.status(200).send('OK');
-  } catch (error) {
-    console.error('Failed to handle webhook event:', error);
-  }
-}
-
-async function handleWebhookEvent(event: any, payload: any) {
-  try {
     if (event === 'pull_request' && payload.action === 'closed') {
       const merged = payload.pull_request.merged;
       if (merged) {
@@ -74,7 +63,9 @@ async function handleWebhookEvent(event: any, payload: any) {
         let regex = /Fixes #(\d+)/;
         let match = payload.pull_request.body.match(regex);
         if (!match) {
-          throw 'Linked Issue not found';
+          return res.status(400).json({
+            message: 'Linked Issue not found',
+          });
         }
 
         const issueNumber = match[1];
@@ -92,7 +83,9 @@ async function handleWebhookEvent(event: any, payload: any) {
         regex = /Bounty (\d+(?:\.\d+)?)SOL/;
         match = issueDescription.match(regex);
         if (!match) {
-          throw 'Linked Bounty not found';
+          return res.status(400).json({
+            message: 'Linked Bounty not found',
+          });
         }
 
         const bounty = match[1];
@@ -100,7 +93,7 @@ async function handleWebhookEvent(event: any, payload: any) {
         const fromSeed = owner;
         const toSeed = payload.pull_request.user.login;
 
-        await program.methods
+        const response = await program.methods
           .transfer(
             owner,
             toSeed,
@@ -116,9 +109,17 @@ async function handleWebhookEvent(event: any, payload: any) {
           })
           .signers([signingOracle])
           .rpc();
+        console.log('Transfer response:', response);
       }
     }
+
+    return res.status(200).json({
+      message: 'Success',
+    });
   } catch (error) {
-    console.error('Failed to handle webhook event:', error);
+    console.error(error);
+    return res.status(400).json({
+      message: 'Failed to handle webhook event',
+    });
   }
 }
