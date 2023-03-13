@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import AddOrganisationLink from './AddOrganisationLink';
+import GetOrganisationAmount from './GetOrganisationAmount';
 
 interface OrganisationsListProps {}
 
@@ -34,7 +35,7 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
     );
   }
 
-  return (
+  return data ? (
     <>
       <ul className="mt-8 space-y-4 pb-4">
         {data?.repoList.map((organisation) => (
@@ -69,13 +70,21 @@ const OrganisationsList = ({}: OrganisationsListProps) => {
             </div>
             <div>
               {/* TODO: fetch from smart contract */}
-              <span className="text-2xl font-bold">3 SOL</span>
+              <span className="text-2xl font-bold">
+                <GetOrganisationAmount login={organisation.owner.login} />
+              </span>
             </div>
           </li>
         ))}
       </ul>
       <AddOrganisationLink />
     </>
+  ) : (
+    // make a loading skeleton
+    <div className="mt-4 text-xl dark:text-slate-200">
+      Loading organisations...
+      <AddOrganisationLink />
+    </div>
   );
 };
 
