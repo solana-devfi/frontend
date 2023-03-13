@@ -24,7 +24,6 @@ export default async function handler(
 ): Promise<void> {
   if (req.method === 'POST') {
     const { recentBlockhash, publicKey, id, isOrg } = JSON.parse(req.body);
-    console.log({ recentBlockhash, publicKey, id, isOrg });
     const userPublicKey = new PublicKey(publicKey);
 
     const proxy = getProxyFromSeed(id, program.programId);

@@ -1,5 +1,9 @@
 import GIT_TO_EARN_IDL from '@/data/idl';
-import { createProviderWithConnection, getProxyFromSeed } from '@/utils/wallet';
+import {
+  createProviderWithConnection,
+  getProxyFromSeed,
+  getWalletFromSeed,
+} from '@/utils/wallet';
 import { Program } from '@project-serum/anchor';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { AccountInfo } from '@solana/web3.js';
@@ -19,7 +23,7 @@ const useGetProxy = ({ githubName }: { githubName: string }) => {
           process.env.PROGRAM_ID,
           provider
         );
-        const proxy = getProxyFromSeed(name || githubName, program.programId);
+        const proxy = getWalletFromSeed(name || githubName, program.programId);
         const accountInfo = await connection.getAccountInfo(proxy);
         setProxyAccount(accountInfo);
       }

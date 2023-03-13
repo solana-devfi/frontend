@@ -5,7 +5,9 @@ import { useQuery } from 'react-query';
 
 export type GithubIssue = Awaited<
   ReturnType<RestEndpointMethods['issues']['listForRepo']>
->['data'][number] & { bounty?: string };
+>['data'][number];
+
+export const BOUNTY_REGEX = /Bounty (\d+(?:\.\d+)?)SOL/;
 
 const fetchRepoIssues = (
   accessToken: string,
@@ -15,28 +17,10 @@ const fetchRepoIssues = (
   const octokit = new Octokit({
     auth: accessToken,
   });
-  return octokit.rest.issues
-    .listForRepo({
-      owner: organisationName,
-      repo: repoName,
-    })
-    .then((issuesData) => {
-      const regex = /Bounty (\d+(?:\.\d+)?)SOL/;
-      return {
-        ...issuesData,
-        data: issuesData.data.map((item) => {
-          const issueDescription = item.body;
-          if (!issueDescription) {
-            return item;
-          }
-          const match = issueDescription.match(regex);
-          if (match) {
-            return { ...item, bounty: match[1].toString() };
-          }
-          return item;
-        }),
-      };
-    });
+  return octokit.rest.issues.listForRepo({
+    owner: organisationName,
+    repo: repoName,
+  });
 };
 
 const useRepoIssues = (organisationName: string, repoName: string) => {

@@ -1,8 +1,13 @@
-import useRepoIssues, { GithubIssue } from '@/hooks/useRepoIssues';
+import useRepoIssues, {
+  BOUNTY_REGEX,
+  GithubIssue,
+} from '@/hooks/useRepoIssues';
+import { GithubPullRequest } from '@/hooks/useRepoPRs';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Button } from '../Layout/Button';
 
 type ItemDetailsProps = {
@@ -21,11 +26,10 @@ const ItemDetails = ({
     repoName.toString()
   );
   const router = useRouter();
-  const [issue, setIssue] = useState<GithubIssue>();
+  const [issue, setIssue] = useState<GithubIssue | GithubPullRequest>();
 
   useEffect(() => {
     setIssue(
-      // @ts-ignore
       issuesData?.data.find((issue) => issue.number.toString() === issueNumber)
     );
   }, [issueNumber, issuesData]);
@@ -33,6 +37,14 @@ const ItemDetails = ({
   if (!issue) {
     return <div>Loading...</div>;
   }
+
+  const isPullRequest = issue?.pullRequest;
+  console.log(issue);
+
+  const bounty =
+    issue.body?.match(BOUNTY_REGEX)?.length > 1
+      ? issue.body?.match(BOUNTY_REGEX)[1]
+      : '';
 
   return (
     <div>
@@ -51,43 +63,48 @@ const ItemDetails = ({
         <h2 className="mb-2 text-xl font-semibold dark:text-slate-400">
           {organisationName}/{repoName}
         </h2>
-        <span className="text-3xl font-bold dark:text-slate-200">
-          {issue.bounty} SOL
-        </span>
+        {Boolean(bounty) && (
+          <span className="text-3xl font-bold dark:text-slate-200">
+            {bounty} SOL
+          </span>
+        )}
       </div>
       <div className="space-y-4 rounded-lg border-2 p-6 pt-4 dark:border-slate-700">
         <div>
           <h3 className="text-lg font-bold dark:text-slate-200">Description</h3>
-          <p className="dark:text-slate-200">
+          <ReactMarkdown className="dark:text-slate-200">
             {issue.body || 'No description found'}
-          </p>
+          </ReactMarkdown>
         </div>
         <div>
-          <h3 className="text-lg font-bold dark:text-slate-200">Assignees</h3>
-          {issue.assignees?.length &&
-            issue.assignees.map((assignee) => (
-              <div
-                key={assignee.id}
-                className="flex items-center space-x-2 dark:text-slate-300"
-              >
-                <Image
-                  className="rounded-full border-2 border-white dark:border-gray-800"
-                  src="https://avatars.githubusercontent.com/u/9083891?v=4"
-                  width={36}
-                  height={36}
-                  alt=""
-                />
-                <a
-                  href={'https://github.com/marcuspang'}
-                  target="_blank"
-                  className="hover:underline"
-                  rel="noreferrer"
+          <h3 className="text-lg font-bold dark:text-slate-200">
+            {isPullRequest ? 'Contributors' : 'Assignees'}
+          </h3>
+          {issue.assignees?.length
+            ? issue.assignees.map((assignee) => (
+                <div
+                  key={assignee.id}
+                  className="flex items-center space-x-2 dark:text-slate-300"
                 >
-                  {assignee.name}
-                </a>
-                <span>1.0 SOL</span>
-              </div>
-            ))}
+                  <Image
+                    className="rounded-full border-2 border-white dark:border-gray-800"
+                    src="https://avatars.githubusercontent.com/u/9083891?v=4"
+                    width={36}
+                    height={36}
+                    alt=""
+                  />
+                  <a
+                    href={'https://github.com/marcuspang'}
+                    target="_blank"
+                    className="hover:underline"
+                    rel="noreferrer"
+                  >
+                    {assignee.name}
+                  </a>
+                  <span>1.0 SOL</span>
+                </div>
+              ))
+            : undefined}
         </div>
         {/* <Button color="blue" className="rounded-lg">
           Distribute Bounty

@@ -1,5 +1,6 @@
 import useCreateProxy from '@/hooks/useCreateProxy';
 import useGetProxy from '@/hooks/useGetProxy';
+import { getWalletFromSeed } from '@/utils/wallet';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useSession } from 'next-auth/react';

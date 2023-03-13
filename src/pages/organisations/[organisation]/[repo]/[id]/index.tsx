@@ -1,4 +1,4 @@
-import ItemDetails from '@/components/Item/IssueDetails';
+import ItemDetails from '@/components/Issue/IssueDetails';
 import { Container } from '@/components/Layout/Container';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';

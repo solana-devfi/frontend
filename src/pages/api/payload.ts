@@ -1,9 +1,9 @@
-import { Octokit } from '@octokit/rest';
-import { createAppAuth } from '@octokit/auth-app';
-import * as anchor from '@project-serum/anchor';
-import { createProvider, getWalletFromSeed } from '@/utils/wallet';
-import { NextApiRequest, NextApiResponse } from 'next';
 import GIT_TO_EARN_IDL from '@/data/idl';
+import { createProvider, getWalletFromSeed } from '@/utils/wallet';
+import { createAppAuth } from '@octokit/auth-app';
+import { Octokit } from '@octokit/rest';
+import * as anchor from '@project-serum/anchor';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const authConfig = {
   appId: process.env.GITHUB_APP_ID,
@@ -16,6 +16,8 @@ const octokit = new Octokit({
   authStrategy: createAppAuth,
   auth: authConfig,
 });
+
+const auth = createAppAuth(authConfig);
 
 const signingOracle = anchor.web3.Keypair.fromSecretKey(
   Buffer.from(JSON.parse(process.env.SIGNING_ORACLE_PRIVATE_KEY))
@@ -36,7 +38,6 @@ export default async function payload(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log(req.body);
   if (req.method === 'POST') {
     try {
       const event = req.headers['x-github-event'];
@@ -54,12 +55,11 @@ export default async function payload(
       //   console.error('Invalid webhook signature.');
       //   return res.status(400).send('Invalid signature');
       // }
-
       if (event === 'pull_request' && payload.action === 'closed') {
         const merged = payload.pull_request.merged;
         if (merged) {
-          const owner = payload.repository.owner.login;
-          const repo = payload.repository.name;
+          const owner: string = payload.repository.owner.login;
+          const repo: string = payload.repository.name;
 
           let regex = /Fixes #(\d+)/;
           let match = payload.pull_request.body.match(regex);
@@ -68,10 +68,23 @@ export default async function payload(
               message: 'Linked Issue not found',
             });
           }
+          const { data } = await octokit.request(
+            'GET /orgs/{org}/installation',
+            {
+              org: owner,
+            }
+          );
+          const installationAuth = await auth({
+            type: 'installation',
+            installationId: data.id,
+          });
+          const installationOctokit = new Octokit({
+            auth: installationAuth.token, // directly pass the token
+          });
 
           const issueNumber = match[1];
           const issueDescription = (
-            await octokit.rest.issues.get({
+            await installationOctokit.rest.issues.get({
               owner,
               repo,
               issue_number: issueNumber,
@@ -93,7 +106,7 @@ export default async function payload(
 
           const fromSeed = owner;
           const toSeed = payload.pull_request.user.login;
-
+          console.log('transfering...');
           const response = await program.methods
             .transfer(
               owner,

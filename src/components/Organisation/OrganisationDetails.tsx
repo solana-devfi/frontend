@@ -1,10 +1,8 @@
 import GIT_TO_EARN_IDL from '@/data/idl';
-import {
-  GithubRepositoryWithOrganisation
-} from '@/hooks/useUserOrganisations';
+import { GithubRepositoryWithOrganisation } from '@/hooks/useUserOrganisations';
 import {
   createProviderWithConnection,
-  getWalletFromSeed
+  getWalletFromSeed,
 } from '@/utils/wallet';
 import * as anchor from '@project-serum/anchor';
 import { Program } from '@project-serum/anchor';
@@ -47,7 +45,6 @@ const OrganisationDetails = ({ orgRepos }: OrganisationDetailsProps) => {
     }
   }, []);
 
-
   const handleFormSubmit = async (amount: number) => {
     await transferSol(amount);
     setIsFormOpen(false);
@@ -76,7 +73,7 @@ const OrganisationDetails = ({ orgRepos }: OrganisationDetailsProps) => {
     <div>
       <div className="mb-6">
         <div className="flex items-center justify-between space-x-4">
-          <div className="flex flex-row space-x-2">
+          <div className="mb-2 flex flex-row space-x-2">
             <Image
               src={organisation.avatar_url}
               alt={organisation.login + ' avatar'}
@@ -105,26 +102,28 @@ const OrganisationDetails = ({ orgRepos }: OrganisationDetailsProps) => {
         <a
           href={`https://github.com/${organisation.login}`}
           target="_blank"
-          className="text-xl font-semibold hover:underline dark:text-slate-500 dark:hover:text-slate-600"
+          className="text-xl hover:underline dark:text-slate-400 dark:hover:text-slate-500"
           rel="noreferrer"
         >
           {`https://github.com/${organisation.login}`}
         </a>
-        <div className="my-2 -space-y-1">
-          <h2 className="text-lg font-bold dark:text-slate-100">Description</h2>
-          <p className="text-xl dark:text-slate-500">
+        <div className="my-2">
+          <h2 className="text-2xl font-bold dark:text-slate-100">
+            Description
+          </h2>
+          <p className="text-lg dark:text-slate-400">
             {'No description found'}
           </p>
         </div>
-        <div className="my-2 -space-y-1">
-          <h2 className="text-lg font-bold dark:text-slate-100">Wallet</h2>
-          <p className="font-mono text-xl dark:text-slate-500">
+        <div className="my-2">
+          <h2 className="text-2xl font-bold dark:text-slate-100">Wallet</h2>
+          <p className="font-mono text-lg dark:text-slate-400">
             {walletAddress.toString()}
           </p>
         </div>
-        <div className="my-2 -space-y-1">
-          <h2 className="text-lg font-bold dark:text-slate-100">Funds</h2>
-          <p className="text-xl font-bold dark:text-slate-500">{balance} SOL</p>
+        <div className="my-2">
+          <h2 className="text-2xl font-bold dark:text-slate-100">Funds</h2>
+          <p className="text-lg dark:text-slate-400">{balance} SOL</p>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">

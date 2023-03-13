@@ -25,20 +25,17 @@ const LatestItems = ({ repoName, organisationName }: LatestItemsProps) => {
   }, [isPullRequestsLoading, isIssuesLoading, pullRequestsData, issuesData]);
 
   return (
-    <ul className="mt-2">
+    <ul>
       {items
         .sort((a, b) => (a.updated_at < b.updated_at ? -1 : 1))
         .slice(0, 3)
         .map((item) => (
           <li
             key={item.id}
-            className="flex justify-between font-light dark:text-slate-300"
+            className="flex font-light dark:text-slate-400"
           >
-            <div>
-              <span className="font-normal">#{item.number}</span>
-              <span> {item.title}</span>
-            </div>
-            <div>{/* <span className="font-normal">1.1 SOL</span> */}</div>
+            <span className="w-12 font-normal">#{item.number}</span>
+            <p>{item.title}</p>
           </li>
         ))}
     </ul>
