@@ -69,7 +69,7 @@ const useCreateProxy = ({
     }
   );
 
-  const createProxy = useCallback(async () => {
+  const createWallet = useCallback(async () => {
     if (signature && connection && wallet && publicKey && recentBlockhash) {
       const provider = createProviderWithConnection(connection, wallet);
       const program = new Program(
@@ -113,7 +113,7 @@ const useCreateProxy = ({
     githubName,
   ]);
 
-  return { createProxy };
+  return { createProxy: createWallet };
 };
 
 export default useCreateProxy;

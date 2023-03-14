@@ -1,5 +1,6 @@
-import useCreateProxy from '@/hooks/useCreateProxy';
+import useCreateProxy from '@/hooks/useCreateWallet';
 import useGetBountyWallet from '@/hooks/useGetProxy';
+import useWithdrawFromWallet from '@/hooks/useWithdrawFromWallet';
 import { getWalletFromSeed } from '@/utils/wallet';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
@@ -17,6 +18,7 @@ const ProxyButton = () => {
     githubName: data?.user?.name,
     isOrg: false,
   });
+  const { withdrawFromWallet } = useWithdrawFromWallet({ githubName: data?.user?.name });
 
   // if user is logged in with GitHub but no proxy account found
   if (proxyAccount === null && status === 'authenticated') {
@@ -58,7 +60,12 @@ const ProxyButton = () => {
   }
 
   return (
-    <Button variant="outline" color="slate" className="rounded-lg text-base">
+    <Button
+      variant="outline"
+      color="slate"
+      className="rounded-lg text-base"
+      buttonProps={{ onClick: () => withdrawFromWallet() }}
+    >
       Total Bounty: {proxyAccount?.lamports / LAMPORTS_PER_SOL} SOL
     </Button>
   );
