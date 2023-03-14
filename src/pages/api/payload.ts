@@ -11,13 +11,12 @@ const authConfig = {
   clientId: process.env.GITHUB_APP_CLIENT_ID,
   clientSecret: process.env.GITHUB_APP_CLIENT_SECRET,
 };
+const auth = createAppAuth(authConfig);
 
 const octokit = new Octokit({
   authStrategy: createAppAuth,
   auth: authConfig,
 });
-
-const auth = createAppAuth(authConfig);
 
 const signingOracle = anchor.web3.Keypair.fromSecretKey(
   Buffer.from(JSON.parse(process.env.SIGNING_ORACLE_PRIVATE_KEY))
