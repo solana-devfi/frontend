@@ -20,12 +20,12 @@ const OrganisationPage = () => {
         <title>DevFi - Git to Earn for Developers</title>
         <meta
           name="description"
-          content="Most bookkeeping software is accurate, but hard to use. We make the opposite trade-off, and hope you don’t get audited."
+          content="Git to Earn. Developing the open source community."
         />
       </Head>
       <Header />
       <main className="dark:bg-slate-900">
-        <Container>
+        <Container className="pb-8">
           {orgRepos?.length ? (
             <OrganisationDetails orgRepos={orgRepos} />
           ) : (

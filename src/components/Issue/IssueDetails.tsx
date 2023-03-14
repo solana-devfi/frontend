@@ -45,7 +45,7 @@ const IssueDetails = ({
       : '';
 
   return (
-    <div className='pb-8'>
+    <div className="pb-8">
       <div className="pb-8">
         <h1 className="mb-2 text-5xl font-extrabold dark:text-slate-200">
           #{issueNumber} {issue.title}{' '}

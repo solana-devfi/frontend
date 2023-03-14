@@ -35,7 +35,7 @@ const OrganisationDetails = ({ orgRepos }: OrganisationDetailsProps) => {
     program.programId
   );
 
-  const { data: balance, isLoading } = useWalletBalance(organisationPubKey);
+  const { data: balance, isLoading, refetch } = useWalletBalance(organisationPubKey);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleFormSubmit = async (amount: number) => {
