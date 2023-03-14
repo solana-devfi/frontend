@@ -3,7 +3,6 @@ import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
 import OrganisationDetails from '@/components/Organisation/OrganisationDetails';
 import useUserOrganisations from '@/hooks/useUserOrganisations';
-import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
