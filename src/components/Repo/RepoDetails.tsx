@@ -69,7 +69,7 @@ const RepoDetails = ({ repoName, organisationName }: RepoDetailsProps) => {
         <a
           className="group mb-6 inline-flex items-center justify-center rounded-lg bg-blue-600 py-2 px-4 text-lg font-semibold text-white hover:bg-blue-500 hover:text-slate-100 hover:underline focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 active:bg-blue-800 active:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:active:bg-blue-600"
           color="blue"
-          href={`https://github.com/${organisationName}/${name}/compare`}
+          href={`https://github.com/${repo.full_name}/compare`}
           target={'_blank'}
           rel="noreferrer"
         >

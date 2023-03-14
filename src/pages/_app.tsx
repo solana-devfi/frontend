@@ -25,9 +25,9 @@ export default function App({
 }) {
   return (
     <SessionProvider session={session}>
+      <Notifications />
       <ContextProvider>
         <QueryClientProvider client={queryClient}>
-          <Notifications />
           <Component {...pageProps} />
         </QueryClientProvider>
       </ContextProvider>
