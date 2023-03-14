@@ -1,5 +1,6 @@
 import useCreateProxy from '@/hooks/useCreateProxy';
 import useGetBountyWallet from '@/hooks/useGetProxy';
+import { getWalletFromSeed } from '@/utils/wallet';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useSession } from 'next-auth/react';
@@ -16,18 +17,6 @@ const ProxyButton = () => {
     githubName: data?.user?.name,
     isOrg: false,
   });
-
-  if (status === 'loading') {
-    return (
-      <Button
-        variant="outline"
-        color="slate"
-        className={'cursor-not-allowed rounded-lg text-base'}
-      >
-        Loading...
-      </Button>
-    );
-  }
 
   // if user is logged in with GitHub but no proxy account found
   if (proxyAccount === null && status === 'authenticated') {
@@ -69,13 +58,8 @@ const ProxyButton = () => {
   }
 
   return (
-    <Button
-      variant="outline"
-      color="slate"
-      className="rounded-lg text-base"
-      buttonProps={{ onClick: () => {} }}
-    >
-      Total Bounty: {proxyAccount.lamports / LAMPORTS_PER_SOL} SOL
+    <Button variant="outline" color="slate" className="rounded-lg text-base">
+      Total Bounty: {proxyAccount?.lamports / LAMPORTS_PER_SOL} SOL
     </Button>
   );
 };

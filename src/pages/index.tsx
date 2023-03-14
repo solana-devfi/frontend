@@ -10,7 +10,7 @@ export default function Home() {
         <title>DevFi - Git to Earn for Developers</title>
         <meta
           name="description"
-          content="Git to Earn. Developing the open source community."
+          content="Most bookkeeping software is accurate, but hard to use. We make the opposite trade-off, and hope you don’t get audited."
         />
       </Head>
       <Header />

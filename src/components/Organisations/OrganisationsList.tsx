@@ -22,7 +22,7 @@ const OrganisationsList = () => {
     process.env.PROGRAM_ID,
     provider
   );
-  const { data, isLoading } = useUserOrganisations();
+  const { data } = useUserOrganisations();
 
   if (status !== 'authenticated') {
     return (
@@ -32,16 +32,7 @@ const OrganisationsList = () => {
     );
   }
 
-  if (isLoading) {
-    // make a loading skeleton
-    return (
-      <div className="mt-4 text-xl dark:text-slate-200">
-        Loading organisations...
-      </div>
-    );
-  }
-
-  return (
+  return data ? (
     <>
       <ul className="mt-8 space-y-4 pb-4">
         {data?.repoList
@@ -94,6 +85,11 @@ const OrganisationsList = () => {
       </ul>
       <AddOrganisationLink />
     </>
+  ) : (
+    // make a loading skeleton
+    <div className="mt-4 text-xl dark:text-slate-200">
+      Loading organisations...
+    </div>
   );
 };
 

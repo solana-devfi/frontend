@@ -1,12 +1,11 @@
 import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/outline';
-import { twMerge } from 'tailwind-merge';
 
 interface MoneyFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (amount: number) => Promise<void>;
+  onSubmit: (amount: number) => void;
 }
 
 export default function DepositFundsPopup({
@@ -15,18 +14,15 @@ export default function DepositFundsPopup({
   onSubmit,
 }: MoneyFormProps) {
   const [amount, setAmount] = useState('');
-  const [isFormSubmitting, setIsFormSubmitting] = useState(false);
 
   function handleAmountChange(event: React.ChangeEvent<HTMLInputElement>) {
     setAmount(event.target.value);
   }
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsFormSubmitting(true);
-    await onSubmit(Number(amount));
-    setIsFormSubmitting(false);
-  };
+    onSubmit(Number(amount));
+  }
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -89,10 +85,7 @@ export default function DepositFundsPopup({
                 <div className="mt-5 justify-end space-x-4 sm:mt-4 sm:flex">
                   <button
                     type="submit"
-                    className={twMerge(
-                      'inline-flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto sm:text-sm',
-                      isFormSubmitting ? 'cursor-not-allowed bg-blue-900' : ''
-                    )}
+                    className="inline-flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto sm:text-sm"
                   >
                     Submit
                   </button>

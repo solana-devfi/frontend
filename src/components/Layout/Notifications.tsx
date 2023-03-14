@@ -1,8 +1,8 @@
 import { useNetworkConfiguration } from '@/contexts/NetworkConfigurationProvider';
 import {
-  CheckCircleIcon,
-  InformationCircleIcon,
-  XCircleIcon,
+    CheckCircleIcon,
+    InformationCircleIcon,
+    XCircleIcon
 } from '@heroicons/react/outline';
 import { XIcon } from '@heroicons/react/solid';
 import { useConnection } from '@solana/wallet-adapter-react';
@@ -64,34 +64,26 @@ const Notification = ({ type, message, description, txid, onHide }) => {
 
   return (
     <div
-      className={`bg-bkg-1 pointer-events-auto mx-4 mt-2 mb-12 w-full max-w-sm overflow-hidden rounded-md p-2 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-slate-800`}
+      className={`bg-bkg-1 pointer-events-auto mx-4 mt-2 mb-12 w-full max-w-sm overflow-hidden rounded-md p-2 shadow-lg ring-1 ring-black ring-opacity-5`}
     >
       <div className={`p-4`}>
         <div className={`flex items-center`}>
           <div className={`flex-shrink-0`}>
             {type === 'success' ? (
-              <CheckCircleIcon
-                className={`text-slate-200 mr-1 h-8 w-8`}
-              />
+              <CheckCircleIcon className={`text-green mr-1 h-8 w-8`} />
             ) : null}
             {type === 'info' && (
-              <InformationCircleIcon
-                className={`text-slate-200 mr-1 h-8 w-8`}
-              />
+              <InformationCircleIcon className={`text-red mr-1 h-8 w-8`} />
             )}
-            {type === 'error' && (
-              <XCircleIcon className={`text-slate-200 mr-1 h-8 w-8`} />
-            )}
+            {type === 'error' && <XCircleIcon className={`mr-1 h-8 w-8`} />}
           </div>
           <div className={`ml-2 w-0 flex-1`}>
-            <div className={`text-fgd-1 font-bold dark:text-slate-200`}>
-              {message}
-            </div>
+            <div className={`text-fgd-1 font-bold`}>{message}</div>
             {description ? (
               <p className={`text-fgd-2 mt-0.5 text-sm`}>{description}</p>
             ) : null}
             {txid ? (
-              <div className="flex flex-row dark:text-slate-200">
+              <div className="flex flex-row">
                 <a
                   href={
                     'https://explorer.solana.com/tx/' +
